@@ -10,7 +10,6 @@ import os
 import sys
 
 
-# IOU Part 1
 def if_intersection(xmin_a, xmax_a, ymin_a, ymax_a, xmin_b, xmax_b, ymin_b, ymax_b):
     """
     Determine whether the two matrices cross
@@ -77,29 +76,23 @@ def selective_search(img1, min_size=100):
 
     w, h, _ = img1.shape
     img_lbl, regions = selectivesearch.selective_search(
-        img1, scale=400, sigma=1.8, min_size=min_size)
+        img1, scale=400, sigma=0.8, min_size=min_size)
     # print 'region number', len(regions)
     print regions
 
     sort_key = lambda item: -item['rect'][2] * item['rect'][3]
-
     regions = sorted(regions, key=sort_key)
+
     candidates = []
     for i in xrange(len(regions) - 1):
-        print '+' * 80
-        print regions[i]['rect'][2] * regions[i]['rect'][3], regions[i]['rect'][2]
         correct = regions[i]['rect']
         if regions[i]['rect'] in candidates:
             print candidates
             continue
         if abs(regions[i]['rect'][2] - w) < 100:
-            print '大', regions[i]['rect'][2] * regions[i]['rect'][3], min_size
             continue
         if regions[i]['rect'][2] * regions[i]['rect'][3] < min_size:
-            print '小', regions[i]['rect'][2] * regions[i]['rect'][3], min_size
             continue
-        print regions[i]['rect'][2] * regions[i]['rect'][3], regions[i]['rect'][2]
-        print '-' * 80
         for j in xrange(i + 1, len(regions)):
             if regions[j]['rect'] in candidates:
                 continue
@@ -108,8 +101,6 @@ def selective_search(img1, min_size=100):
             if regions[j]['rect'][2] * regions[i]['rect'][3] < min_size:
                 continue
             IOU, square0, square1 = get_IOU(regions[i]['rect'], regions[j]['rect'])
-            # print regions[i]['rect'], regions[j]['rect'], square0, square1, IOU
-            # print regions[i]['rect'][2], regions[j]['rect'][2], w
 
             if IOU > 0:
                 if square1 < square0:
@@ -130,7 +121,7 @@ def selective_search(img1, min_size=100):
             patches.Rectangle(
                 (candidates[i][0], candidates[i][1]),
                 candidates[i][2], candidates[i][3],
-                linewidth=1, edgecolor='g', facecolor='none'))
+                linewidth=1, edgecolor='r', facecolor='none'))
     plt.show()
 
 
@@ -153,12 +144,12 @@ def read_img(file_name):
 
 def run(file_name):
     img = read_img(file_name)
-    selective_search(img, 300)
+    selective_search(img, 100)
 
 
 if __name__ == '__main__':
     # run('images/11.png')
-    # run('images/12.png')
-    # run('images/24.jpg')
-    # run('images/13.png')
+    run('images/12.jpg')
+    run('images/24.jpg')
     run('images/14.jpg')
+    run('images/13.png')
