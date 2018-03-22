@@ -49,6 +49,8 @@ def get_areas(proj_list, epsilon=0):
                 eps = 0
             else:
                 eps += 1
+        if i == len(proj_list) - 1 and not proj_list[i] == 0:
+            area_list.append((s, i))
     return area_list
 
 
@@ -66,49 +68,69 @@ def project_cut(img, row_eps, col_eps):
 
     row_list = get_areas(row_proj, epsilon=row_eps)
     col_list = get_areas(col_proj, epsilon=col_eps)
-
+    print row_list
+    print col_list
     areas = []
-    i = 0
     for x0, x1 in row_list:
         for y0, y1 in col_list:
             areas.append([x0, y0, x1 - x0, y1 - y0])
 
+    return areas, row_list, col_list
+
+
+def save_questions(img, areas, base_fname):
+    i = 0
+    for area in areas:
+        tmp = img[area[1]: area[1] + area[3],
+              area[0]: area[0] + area[2]]
+        np.savetxt('tmp2.txt', tmp)
+        # plt.imshow(tmp)
+        # plt.show()
+        cv2.imwrite('tmp/%s%s.jpg' % (base_fname, i), tmp * 255)
+        cv2.destroyAllWindows()
+        i += 1
+
+
+def save_numbers(img, row_list, col_list, base_fname):
+    i = 0
+    for x0, x1 in row_list:
+        for y0, y1 in col_list:
             tmp = img[y0: y1, x0: x1]
-            tmp = cv2.resize(tmp,(28, 28))
-            plt.imshow(tmp)
-            plt.show()
-            cv2.imwrite('tmp1/item%s.jpg' % i, tmp * 255)
+            tmp = cv2.resize(tmp, (20, 24))
+            tmp = np.pad(tmp, ((2,), (4,)), mode='constant')
+            print tmp.shape
+
+            cv2.imwrite('tmp2/%s%s.jpg' % (base_fname, i), tmp * 255)
+            print 'tmp2/%s%s.jpg' % (base_fname, i)
             i += 1
-    cv2.destroyAllWindows()
-
-    # tmp = img[areas[10][1]: areas[10][1] + areas[10][3],
-    #       areas[10][0]: areas[10][0] + areas[10][2]]
-    # np.savetxt('tmp2.txt', tmp)
-    # plt.imshow(tmp)
-    # plt.show()
-    # cv2.imwrite('tmp/question.jpg', tmp * 255)
-    # cv2.destroyAllWindows()
-    # sys.exit(0)
-
-    plt.figure(0)
-    plt.imshow(img, cmap='gray')
-    cu = plt.gca()
-    for i in xrange(len(areas)):
-        cu.add_patch(
-            patches.Rectangle(
-                (areas[i][0], areas[i][1]),
-                areas[i][2], areas[i][3],
-                linewidth=1, edgecolor='r', facecolor='none'))
-    plt.show()
+            cv2.destroyAllWindows()
+            # plt.imshow(tmp)
+            # plt.show()
 
 
 def run(file_name):
     img = read_img(file_name, color_inv_norm=False)
+    np.savetxt('tmp1.txt', img)
 
-    np.savetxt('tmp.txt', img)
+    # 截取图片保存试题
+    # areas, row_list, col_list = project_cut(img, row_eps=img.shape[1] / 30, col_eps=10)
+    # save_questions(img, areas, file_name[file_name.find('/'), file_name.rfind('.')])
+
+    # 截取试题保存数字
+    areas, row_list, col_list = project_cut(img, row_eps=0, col_eps=0)
+    save_numbers(img, row_list, col_list, file_name[file_name.find('/'): file_name.rfind('.')])
+
+    # plt.figure(0)
+    # plt.imshow(img, cmap='gray')
+    # cu = plt.gca()
+    # for i in xrange(len(areas)):
+    #     cu.add_patch(
+    #         patches.Rectangle(
+    #             (areas[i][0], areas[i][1]),
+    #             areas[i][2], areas[i][3],
+    #             linewidth=1, edgecolor='r', facecolor='none'))
     # plt.show()
-    # project_cut(img, row_eps=img.shape[1] / 30, col_eps=10)
-    project_cut(img, row_eps=0, col_eps=0)
+
 
 
 if __name__ == '__main__':
@@ -121,4 +143,6 @@ if __name__ == '__main__':
     # run('images/16.jpg')
 
     # run('images/11.png')
-    run('tmp/question.jpg')
+    for i in xrange(50):
+        run('tmp/question%s.jpg' % i)
+        # sys.exit(0)
