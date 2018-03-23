@@ -18,7 +18,9 @@ def read_img(file_name, color_inv_norm=True):
     img = cv2.imread(file_name, cv2.IMREAD_GRAYSCALE)
 
     if color_inv_norm:
-        img = (255 - img) / 255.0
+        img = 255 - img
+        img[img < 150] = 0
+        img = img / 255.0
     else:
         img[img < 50] = 0
         img = img / 255.0
@@ -62,14 +64,13 @@ def project_cut(img, row_eps, col_eps):
     :param col_eps:
     :return:
     """
-    print img.shape
     row_proj = np.sum(img, axis=0)
     col_proj = np.sum(img, axis=1)
 
     row_list = get_areas(row_proj, epsilon=row_eps)
     col_list = get_areas(col_proj, epsilon=col_eps)
-    print row_list
-    print col_list
+    print '列分割：', row_list
+    print '行分割：', col_list
     areas = []
     for x0, x1 in row_list:
         for y0, y1 in col_list:
@@ -86,7 +87,7 @@ def save_questions(img, areas, base_fname):
         np.savetxt('tmp2.txt', tmp)
         # plt.imshow(tmp)
         # plt.show()
-        cv2.imwrite('tmp/%s%s.jpg' % (base_fname, i), tmp * 255)
+        cv2.imwrite('questions/%s%s.jpg' % (base_fname, i), tmp * 255)
         cv2.destroyAllWindows()
         i += 1
 
@@ -98,10 +99,8 @@ def save_numbers(img, row_list, col_list, base_fname):
             tmp = img[y0: y1, x0: x1]
             tmp = cv2.resize(tmp, (20, 24))
             tmp = np.pad(tmp, ((2,), (4,)), mode='constant')
-            print tmp.shape
 
-            cv2.imwrite('tmp2/%s%s.jpg' % (base_fname, i), tmp * 255)
-            print 'tmp2/%s%s.jpg' % (base_fname, i)
+            cv2.imwrite('numbers/%s%s.jpg' % (base_fname, i), tmp * 255)
             i += 1
             cv2.destroyAllWindows()
             # plt.imshow(tmp)
@@ -113,23 +112,25 @@ def run(file_name):
     np.savetxt('tmp1.txt', img)
 
     # 截取图片保存试题
-    # areas, row_list, col_list = project_cut(img, row_eps=img.shape[1] / 30, col_eps=10)
-    # save_questions(img, areas, file_name[file_name.find('/'), file_name.rfind('.')])
+    # areas, row_list, col_list = \
+    #     project_cut(img, row_eps=img.shape[1] / 30, col_eps=10)
+    #
+    # save_questions(img, areas, file_name[file_name.find('/'): file_name.rfind('.')])
 
     # 截取试题保存数字
     areas, row_list, col_list = project_cut(img, row_eps=0, col_eps=0)
     save_numbers(img, row_list, col_list, file_name[file_name.find('/'): file_name.rfind('.')])
 
-    # plt.figure(0)
-    # plt.imshow(img, cmap='gray')
-    # cu = plt.gca()
-    # for i in xrange(len(areas)):
-    #     cu.add_patch(
-    #         patches.Rectangle(
-    #             (areas[i][0], areas[i][1]),
-    #             areas[i][2], areas[i][3],
-    #             linewidth=1, edgecolor='r', facecolor='none'))
-    # plt.show()
+    plt.figure(0)
+    plt.imshow(img, cmap='gray')
+    cu = plt.gca()
+    for i in xrange(len(areas)):
+        cu.add_patch(
+            patches.Rectangle(
+                (areas[i][0], areas[i][1]),
+                areas[i][2], areas[i][3],
+                linewidth=1, edgecolor='r', facecolor='none'))
+    plt.show()
 
 
 
@@ -143,6 +144,6 @@ if __name__ == '__main__':
     # run('images/16.jpg')
 
     # run('images/11.png')
-    for i in xrange(50):
-        run('tmp/question%s.jpg' % i)
+    for i in xrange(19):
+        run('tmp/24%s.jpg' % i)
         # sys.exit(0)
