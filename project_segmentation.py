@@ -133,7 +133,6 @@ def run(file_name):
     plt.show()
 
 
-
 if __name__ == '__main__':
 
     # run('images/12.jpg')
