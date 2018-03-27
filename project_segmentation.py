@@ -84,9 +84,8 @@ def save_questions(img, areas, base_fname):
     for area in areas:
         tmp = img[area[1]: area[1] + area[3],
               area[0]: area[0] + area[2]]
-        np.savetxt('tmp2.txt', tmp)
-        # plt.imshow(tmp)
-        # plt.show()
+        if not os.path.isdir('questions'):
+            os.mkdir('questions')
         cv2.imwrite('questions/%s%s.jpg' % (base_fname, i), tmp * 255)
         cv2.destroyAllWindows()
         i += 1
@@ -99,7 +98,8 @@ def save_numbers(img, row_list, col_list, base_fname):
             tmp = img[y0: y1, x0: x1]
             tmp = cv2.resize(tmp, (20, 24))
             tmp = np.pad(tmp, ((2,), (4,)), mode='constant')
-
+            if not os.path.isdir('numbers'):
+                os.mkdir('numbers')
             cv2.imwrite('numbers/%s%s.jpg' % (base_fname, i), tmp * 255)
             i += 1
             cv2.destroyAllWindows()
@@ -108,7 +108,7 @@ def save_numbers(img, row_list, col_list, base_fname):
 
 
 def run(file_name):
-    img = read_img(file_name, color_inv_norm=False)
+    img = read_img(file_name, color_inv_norm=True)
     np.savetxt('tmp1.txt', img)
 
     # 截取图片保存试题
@@ -133,6 +133,22 @@ def run(file_name):
     plt.show()
 
 
+def get_questions(file_name):
+    img = read_img(file_name, color_inv_norm=True)
+    # 截取图片保存试题
+    areas, row_list, col_list = \
+        project_cut(img, row_eps=img.shape[1] / 30, col_eps=10)
+
+    save_questions(img, areas, file_name[file_name.find('/'): file_name.rfind('.')])
+
+
+def get_numbers(file_name):
+    img = read_img(file_name, color_inv_norm=False)
+    # 截取试题保存数字
+    areas, row_list, col_list = project_cut(img, row_eps=0, col_eps=0)
+
+    save_numbers(img, row_list, col_list, file_name[file_name.find('/'): file_name.rfind('.')])
+
 if __name__ == '__main__':
 
     # run('images/12.jpg')
@@ -142,7 +158,7 @@ if __name__ == '__main__':
     # run('images/15.jpg')
     # run('images/16.jpg')
 
-    # run('images/11.png')
-    for i in xrange(19):
-        run('tmp/24%s.jpg' % i)
-        # sys.exit(0)
+    # get_questions('images/cgd.jpg')
+    for i in xrange(10):
+        print i
+        get_numbers('questions/cgd%s.jpg' % i)
