@@ -74,6 +74,9 @@ def project_cut(img, row_eps, col_eps):
     areas = []
     for x0, x1 in row_list:
         for y0, y1 in col_list:
+            # x0 x1-x0 y0 y1-y0 are abscissa width ordinate height
+            # judge whether the area is only-black
+            if np.sum(img[y0: y1, x0: x1]) == 10: continue
             areas.append([x0, y0, x1 - x0, y1 - y0])
 
     return areas, row_list, col_list
