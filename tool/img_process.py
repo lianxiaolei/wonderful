@@ -3,6 +3,8 @@
 import numpy as np
 import cv2
 import os
+import matplotlib.patches as patches
+import matplotlib.pyplot as plt
 
 
 def read_img(file_name, color_inv_norm=True):
@@ -45,6 +47,23 @@ def get_hist(img, axis=0):
     :return:
     """
     return np.sum(img, axis=axis)
+
+
+def show_all_regions(img, regions, layer=0):
+    plt.figure(0)
+    plt.imshow(img, cmap='gray')
+    cu = plt.gca()
+    # for i in xrange(len(areas)):
+    #     cu.add_patch(
+    #         patches.Rectangle(
+    #             (areas[i][0], areas[i][1]),
+    #             areas[i][2], areas[i][3],
+    #             linewidth=1, edgecolor='r', facecolor='none'))
+    # plt.show()
+    for k, question_region in regions.iteritems():
+        cu.add_patch(patches.Rectangle(
+            (question_region.)
+        ))
 
 
 def save_region_as_jpg():

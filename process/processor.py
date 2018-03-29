@@ -22,7 +22,6 @@ def get_cut(img, row_eps, col_eps):
     return question_areas
 
 
-
 def project_cut_old(img, row_eps, col_eps):
     """
 
