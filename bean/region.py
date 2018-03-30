@@ -8,12 +8,14 @@ class Region(object):
     It has five vars include x, y, width, height and sub_regions,
         the sub_regions is also a Region object.
     """
-    def __init__(self, x=0, y=0, width=0, height=0):
+    def __init__(self, x=0, y=0, width=0, height=0, img=None):
         self.x = x
         self.y = y
         self.width = width
         self.height = height
         self.sub_regions = OrderedDict()
+        self.img = img
+        self.recognization = None
         # print 'Class has been initialized', vars(self)
 
     def get_x(self):
@@ -46,6 +48,19 @@ class Region(object):
     def add_sub_region(self, region):
         self.sub_regions.append(region)
 
+    def get_img(self):
+        return self.img
 
+    def set_img(self, img):
+        self.img = img
+
+    def get_recognization(self):
+        return self.recognization
+
+    def set_recognization(self, reco_str):
+        self.recognization = reco_str
+
+
+# test
 if __name__ == '__main__':
     r = Region(10, 10, 2, 2)

@@ -1,9 +1,6 @@
 # coding: utf-8
 
-from core.img_process import *
 from core.segmentation import *
-import matplotlib.patches as patches
-import matplotlib.pyplot as plt
 import numpy as np
 import os
 
@@ -21,45 +18,32 @@ def cut(img, row_eps, col_eps):
     for k, v in question_areas.iteritems():
         region_arr = region2ndarray(img, v)
 
-        number_areas = project_cut(region_arr, 0, 0)
+        number_areas = project_cut(
+            region_arr, 0, 0, rp_size=(20, 24), rp_padding=((2,), (4,)))
 
         v.sub_regions = number_areas
 
     return question_areas
 
 
-def show_all_regions(img, regions, layer=0):
+def save_region_as_jpg(fname, img, region, diastolic=True, resize_padding=False):
     """
-    show all question regions and number regions with matplotlib
+
+    :param fname:
     :param img:
-    :param regions:
-    :param layer:
+    :param region:
+    :param diastolic:
+    :param resize_padding:
     :return:
     """
-    plt.figure(0)
-    plt.imshow(img, cmap='gray')
-    cu = plt.gca()
+    sub_img = get_region_img(img, region)
 
-    for k, question_region in regions.iteritems():
-        if layer in [0, 1]:
-            cu.add_patch(patches.Rectangle(
-                (question_region.get_x(), question_region.get_y()),
-                question_region.get_width(), question_region.get_height(),
-                linewidth=2, edgecolor='c', facecolor='none'
-            ))
-        if layer in [0, 2]:
-            for j, number_region in question_region.get_sub_regions().iteritems():
-                cu.add_patch(patches.Rectangle(
-                    (question_region.get_x() + number_region.get_x(),
-                     question_region.get_y() + number_region.get_y()),
-                    number_region.get_width(), number_region.get_height(),
-                    linewidth=1, edgecolor='y', facecolor='none'
-                ))
-    plt.show()
+    if diastolic:
+        cv2.imwrite(fname, sub_img * 255)
+    else:
+        cv2.imwrite(fname, sub_img)
 
-
-def save_region_as_jpg():
-    pass
+    cv2.destroyAllWindows()
 
 
 def save_questions(img, areas, base_fname):
