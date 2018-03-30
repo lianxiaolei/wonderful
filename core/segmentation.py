@@ -1,7 +1,6 @@
 # coding: utf-8
 
 import numpy as np
-import cv2
 from bean.region import Region
 from collections import OrderedDict
 
@@ -36,7 +35,7 @@ def get_areas(proj_list, epsilon=0):
 
 def get_area_dict(img, row_list, col_list):
     """
-
+    obtain the region dict with format {'x0_y0', region}
     :param img:
     :param row_list:
     :param col_list:
@@ -47,7 +46,7 @@ def get_area_dict(img, row_list, col_list):
         for y0, y1 in col_list:
             # x0 x1-x0 y0 y1-y0 are abscissa width ordinate height
             # judge whether the area is only-black
-            if np.sum(img[y0: y1, x0: x1]) == 10: continue
+            if np.sum(img[y0: y1, x0: x1]) <= 50: continue
             region = Region(x0, y0, x1 - x0, y1 - y0)
             areas['%s_%s' % (x0, y0)] = region
     return areas
@@ -55,7 +54,7 @@ def get_area_dict(img, row_list, col_list):
 
 def project_cut(img, row_eps, col_eps):
     """
-
+    cut img with axis project
     :param img:
     :param row_eps:
     :param col_eps:

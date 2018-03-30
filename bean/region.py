@@ -3,14 +3,18 @@
 from collections import OrderedDict
 
 class Region(object):
-
+    """
+    This class is used to describe a rectangle.
+    It has five vars include x, y, width, height and sub_regions,
+        the sub_regions is also a Region object.
+    """
     def __init__(self, x=0, y=0, width=0, height=0):
         self.x = x
         self.y = y
         self.width = width
         self.height = height
         self.sub_regions = OrderedDict()
-        print 'Class has been initialized', vars(self)
+        # print 'Class has been initialized', vars(self)
 
     def get_x(self):
         return self.x
