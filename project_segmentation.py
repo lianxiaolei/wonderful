@@ -30,4 +30,3 @@ if __name__ == '__main__':
     # run('images/13.png')
     # run('images/15.jpg')
     # run('images/16.jpg')
-
