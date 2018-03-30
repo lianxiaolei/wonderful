@@ -1,54 +1,76 @@
 # coding: utf-8
 
-import cv2
-from tool.img_process import *
-from tool.segmentation import *
-import matplotlib.patches as patches
-import matplotlib.pyplot as plt
+from core.segmentation import *
 import numpy as np
 import os
 
 
-def get_cut(img, row_eps, col_eps):
+def cut(img, row_eps, col_eps):
+    """
+    cut a image
+    :param img:
+    :param row_eps:
+    :param col_eps:
+    :return:
+    """
     question_areas = project_cut(img, row_eps, col_eps)
 
     for k, v in question_areas.iteritems():
         region_arr = region2ndarray(img, v)
 
-        number_areas = project_cut(region_arr, 0, 0)
+        number_areas = project_cut(
+            region_arr, 0, 0, rp_size=(20, 24), rp_padding=((2,), (4,)))
 
         v.sub_regions = number_areas
 
     return question_areas
 
 
-def project_cut_old(img, row_eps, col_eps):
+def save_region_as_jpg(fname, img, region, diastolic=True, resize_padding=False):
     """
 
+    :param fname:
     :param img:
-    :param row_eps:
-    :param col_eps:
+    :param region:
+    :param diastolic:
+    :param resize_padding:
     :return:
     """
-    row_proj = np.sum(img, axis=0)
-    col_proj = np.sum(img, axis=1)
+    sub_img = get_region_img(img, region)
 
-    row_list = get_areas(row_proj, epsilon=row_eps)
-    col_list = get_areas(col_proj, epsilon=col_eps)
-    print '列分割：', row_list
-    print '行分割：', col_list
-    # questions area dict
-    question_areas = get_area_dict(img, row_list, col_list)
-    question_numbers_areas = {}
-    for k, v in question_areas.iteritems():
-        region_arr = region2ndarray(img, v)
+    if diastolic:
+        cv2.imwrite(fname, sub_img * 255)
+    else:
+        cv2.imwrite(fname, sub_img)
 
-        question_row_proj = get_hist(region_arr, axis=0)
-        question_col_proj = get_hist(region_arr, axis=1)
+    cv2.destroyAllWindows()
 
-        question_row_list = get_areas(question_row_proj, epsilon=row_eps)
-        question_col_list = get_areas(question_col_proj, epsilon=col_eps)
 
-        number_areas = get_area_dict(img, question_row_list, question_col_list)
+def save_questions(img, areas, base_fname):
+    # 调用方式:save_questions(img, areas, file_name[file_name.find('/'): file_name.rfind('.')])
+    i = 0
+    for area in areas:
+        tmp = img[area[1]: area[1] + area[3],
+              area[0]: area[0] + area[2]]
+        if not os.path.isdir('questions'):
+            os.mkdir('questions')
+        cv2.imwrite('questions/%s%s.jpg' % (base_fname, i), tmp * 255)
+        cv2.destroyAllWindows()
+        i += 1
 
-        question_numbers_areas[k] = number_areas
+
+def save_numbers(img, row_list, col_list, base_fname):
+    # 调用方式:save_numbers(img, row_list, col_list, file_name[file_name.find('/'): file_name.rfind('.')])
+    i = 0
+    for x0, x1 in row_list:
+        for y0, y1 in col_list:
+            tmp = img[y0: y1, x0: x1]
+            tmp = cv2.resize(tmp, (20, 24))
+            tmp = np.pad(tmp, ((2,), (4,)), mode='constant')
+            if not os.path.isdir('numbers'):
+                os.mkdir('numbers')
+            cv2.imwrite('numbers/%s%s.jpg' % (base_fname, i), tmp * 255)
+            i += 1
+            cv2.destroyAllWindows()
+            # plt.imshow(tmp)
+            # plt.show()
