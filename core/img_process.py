@@ -84,7 +84,7 @@ def show_all_regions(img, regions, layer=0):
     plt.imshow(img, cmap='gray')
     cu = plt.gca()
 
-    for k, question_region in regions.iteritems():
+    for i, question_region in regions.items():
         if layer in [0, 1]:
             cu.add_patch(patches.Rectangle(
                 (question_region.get_x(), question_region.get_y()),
@@ -92,7 +92,7 @@ def show_all_regions(img, regions, layer=0):
                 linewidth=2, edgecolor='c', facecolor='none'
             ))
         if layer in [0, 2]:
-            for j, number_region in question_region.get_sub_regions().iteritems():
+            for j, number_region in question_region.get_sub_regions().items():
                 cu.add_patch(patches.Rectangle(
                     (question_region.get_x() + number_region.get_x(),
                      question_region.get_y() + number_region.get_y()),
@@ -100,3 +100,21 @@ def show_all_regions(img, regions, layer=0):
                     linewidth=1, edgecolor='y', facecolor='none'
                 ))
     plt.show()
+
+
+def save_all_regions(regions, dir_name, layer=0):
+    """
+    save regions as image
+    :param regions:
+    :param dir_name:
+    :param layer:
+    :return:
+    """
+    k = 0
+    for i, question_region in regions.items():
+        if layer in [0, 1]:
+            cv2.imwrite('%s/%s.jpg' % (dir_name[0], k), question_region.get_img())
+        if layer in [0, 2]:
+            l = 0
+            for j, number_region in question_region.get_sub_regions().items():
+                cv2.imwrite('%s/%s.jpg' % (dir_name[1], l), number_region.get_img())
