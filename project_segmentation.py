@@ -19,7 +19,7 @@ def run(file_name):
     """
     img = read_img(file_name, color_inv_norm=True)
     regions = cut(img, row_eps=img.shape[1] / 30, col_eps=10)
-    show_all_regions(img, regions, layer=0)
+    show_all_regions(img, regions, layer=2)
 
 
 if __name__ == '__main__':

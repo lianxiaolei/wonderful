@@ -26,7 +26,7 @@ def cut(img, row_eps, col_eps):
     return question_areas
 
 
-def save_region_as_jpg(fname, img, region, diastolic=True, resize_padding=False):
+def save_region_as_jpg(fname, img, region, diastolic=True):
     """
 
     :param fname:

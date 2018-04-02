@@ -2,6 +2,7 @@
 
 from collections import OrderedDict
 
+
 class Region(object):
     """
     This class is used to describe a rectangle.
