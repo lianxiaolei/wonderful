@@ -2,7 +2,7 @@
 
 from bean.region import Region
 from collections import OrderedDict
-from img_process import *
+from core.img_process import *
 
 
 def get_areas(proj_list, epsilon=0):
@@ -15,7 +15,7 @@ def get_areas(proj_list, epsilon=0):
     area_list = []
     s = -1
     eps = 0
-    for i in xrange(len(proj_list)):
+    for i in range(len(proj_list)):
         if not proj_list[i] == 0 and s == -1:
             s = i
         if not proj_list[i] == 0:
