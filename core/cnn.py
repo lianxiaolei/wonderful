@@ -9,8 +9,7 @@ class CNN(object):
 
     """
 
-    def __init__(self, x_shape=[None, 28, 28, 1], y_shape=[None, 10],
-                 batch_size=128, test_size=256):
+    def __init__(self, p_keep_conv, p_keep_hidden, batch_size, test_size, epoch_time):
         """
         Initialization
         :param batch_size
@@ -25,9 +24,12 @@ class CNN(object):
         self.test_size = test_size
         self.p_keep_conv = tf.placeholder("float")  # 卷积层的dropout概率
         self.p_keep_hidden = tf.placeholder("float")  # 全连接层的dropout概率
-        self.X = tf.placeholder("float", x_shape)
-        self.Y = tf.placeholder("float", y_shape)
+        self.X = tf.placeholder("float", [None, 28, 28, 1])
+        self.Y = tf.placeholder("float", [None, 10])
         self.sess = None  # tensorflow session
+        self.p_keep_conv = p_keep_conv
+        self.p_keep_hidden = p_keep_hidden
+        self.epoch_time = epoch_time
 
     def _init_weights(self, shape):
         """
@@ -73,7 +75,7 @@ class CNN(object):
 
         return out
 
-    def fit(self, train_x, train_y, test_x, test_y, p_keep_conv, p_keep_hidden, epoch_time):
+    def fit(self, train_x, train_y, test_x, test_y):
         """
 
         :param train_x:
@@ -95,7 +97,7 @@ class CNN(object):
         predict_op = tf.argmax(out, 1)  # 返回每个样本的预测结果
 
         self.sess = tf.Session()
-        for i in range(epoch_time):
+        for i in range(self.epoch_time):
             training_batch = zip(range(0, len(train_x), self.batch_size),
                                  range(self.batch_size, len(train_x) + 1, self.batch_size))
             for start, end in training_batch:
@@ -110,7 +112,7 @@ class CNN(object):
                              self.sess.run(
                                  predict_op, feed_dict={
                                      self.X: test_x[test_indices],
-                                     p_keep_conv: 1.0, p_keep_hidden: 1.0})))
+                                     self.p_keep_conv: 1.0, self.p_keep_hidden: 1.0})))
         print('Train done')
 
     def save(self, model_name):

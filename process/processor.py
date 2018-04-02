@@ -1,6 +1,9 @@
 # coding: utf-8
 
 from core.segmentation import *
+from core.cnn import CNN
+import tensorflow as tf
+from tensorflow.examples.tutorials.mnist import input_data
 import numpy as np
 import os
 
@@ -49,5 +52,24 @@ def save_region_as_jpg(fname, img, region, diastolic=True, resize_padding=False)
     cv2.destroyAllWindows()
 
 
-def cnn_model_maker():
+def cnn_model_maker(model_name, p_keep_conv=1.0, p_keep_hidden=1.0,
+                    batch_size=128, test_size=256, epoch_time=3):
+    """
 
+    :param batch_size:
+    :param test_size:
+    :return:
+    """
+    cnn = CNN(p_keep_conv=p_keep_conv, p_keep_hidden=p_keep_hidden,
+              batch_size=batch_size, test_size=test_size, epoch_time=epoch_time)
+
+    mnist = input_data.read_data_sets('./', one_hot=True)
+
+    train_x, train_y, test_x, test_y = \
+        mnist.train.images, mnist.train.labels, mnist.test.images, mnist.test.labels
+    train_x = train_x.reshape(-1, 28, 28, 1)
+    test_x = test_x.reshape(-1, 28, 28, 1)
+
+    cnn.fit(train_x, train_y, test_x, test_y)
+
+    cnn.save(model_name)
