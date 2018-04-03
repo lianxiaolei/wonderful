@@ -1,14 +1,6 @@
 # coding: utf-8
 
-import cv2
-import matplotlib.patches as patches
-import matplotlib.pyplot as plt
-import numpy as np
-from core.img_process import *
-from core.segmentation import *
 from process.processor import *
-import os
-import sys
 
 
 def run(file_name):
@@ -19,8 +11,9 @@ def run(file_name):
     """
     img = read_img(file_name, color_inv_norm=True)
     regions = cut(img, row_eps=img.shape[1] / 30, col_eps=10)
-    show_all_regions(img, regions, layer=0)
+    # show_all_regions(img, regions, layer=0)
     # cnn_model_maker('model/Test_CNN_Model.ckpt', epoch_time=1, p_keep_conv=0.8, p_keep_hidden=0.6)
+    regions_recognition(regions, 'model/Test_CNN_Model.ckpt')
 
 
 if __name__ == '__main__':

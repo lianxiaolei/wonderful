@@ -2,10 +2,7 @@
 
 from core.segmentation import *
 from core.cnn import CNN
-import tensorflow as tf
 from tensorflow.examples.tutorials.mnist import input_data
-import numpy as np
-import os
 
 
 def cut(img, row_eps, col_eps):
@@ -28,18 +25,16 @@ def cut(img, row_eps, col_eps):
 
         # TODO recognize the content
 
-
     return question_areas
 
 
-def save_region_as_jpg(fname, img, region, diastolic=True, resize_padding=False):
+def save_region_as_jpg(fname, img, region, diastolic=True):
     """
 
     :param fname:
     :param img:
     :param region:
     :param diastolic:
-    :param resize_padding:
     :return:
     """
     sub_img = get_region_img(img, region)
@@ -55,21 +50,73 @@ def save_region_as_jpg(fname, img, region, diastolic=True, resize_padding=False)
 def cnn_model_maker(model_name, p_keep_conv=1.0, p_keep_hidden=1.0,
                     batch_size=128, test_size=256, epoch_time=3):
     """
-
+    :param model_name:
+    :param p_keep_conv:
+    :param p_keep_hidden:
     :param batch_size:
     :param test_size:
+    :param epoch_time
     :return:
     """
+    print('initializing CNN model')
     cnn = CNN(p_keep_conv=p_keep_conv, p_keep_hidden=p_keep_hidden,
               batch_size=batch_size, test_size=test_size, epoch_time=epoch_time)
-
-    mnist = input_data.read_data_sets('./', one_hot=True)
+    print('CNN has been initialized')
+    print('reading mnist')
+    mnist = input_data.read_data_sets('assets/', one_hot=True)
 
     train_x, train_y, test_x, test_y = \
         mnist.train.images, mnist.train.labels, mnist.test.images, mnist.test.labels
     train_x = train_x.reshape(-1, 28, 28, 1)
     test_x = test_x.reshape(-1, 28, 28, 1)
-
+    print('load mnist done')
+    print('training')
     cnn.fit(train_x, train_y, test_x, test_y)
 
     cnn.save(model_name)
+
+
+def num_recognition(img, model_name):
+    """
+
+    :param img:
+    :param model_name:
+    :return:
+    """
+    cnn = CNN()
+    print('loading model')
+    cnn.load_session(model_name)
+    print('load done')
+    result = cnn.predict(img)
+    return result
+
+
+def regions_recognition(regions, model_name):
+    """
+
+    :param img:
+    :param regions:
+    :param model_name:
+    :return:
+    """
+    cnn = CNN()
+    cnn.load_session(model_name)
+
+    for i, question_region in regions.items():
+        question = []
+        for j, number_region in question_region.get_sub_regions().items():
+            result = num_recognition(number_region.get_img(), model_name)
+            regions[i][j].set_recognition(str(result))
+            question.append(result)
+            if result == '=':
+                question.append(result)
+        tmp = ''.join(question)
+        regions[i].set_recognition(tmp)
+        try:
+            regions[i].set_result(eval(tmp))
+        except:
+            print(tmp)
+            # raise ValueError('the recognition is incorrect')
+            pass
+
+    return regions

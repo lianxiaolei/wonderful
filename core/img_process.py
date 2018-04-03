@@ -55,7 +55,8 @@ def get_region_img(img, region):
     :param region:
     :return:
     """
-    return img[region.get_y(): region.get_y() + region.get_height(),
+    return img[
+           region.get_y(): region.get_y() + region.get_height(),
            region.get_x(): region.get_x() + region.get_width()]
 
 
