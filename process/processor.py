@@ -20,10 +20,10 @@ def cut(img, row_eps, col_eps):
 
         number_areas = project_cut(
             region_arr, 0, 0, rp_size=(20, 24), rp_padding=((2,), (4,)))
+        # number_areas = project_cut(
+        #     region_arr, 0, 0)
 
         v.sub_regions = number_areas
-
-        # TODO recognize the content
 
     return question_areas
 
@@ -47,7 +47,7 @@ def save_region_as_jpg(fname, img, region, diastolic=True):
     cv2.destroyAllWindows()
 
 
-def cnn_model_maker(model_name, p_keep_conv=1.0, p_keep_hidden=1.0,
+def alg_train(model_name, p_keep_conv=1.0, p_keep_hidden=1.0,
                     batch_size=128, test_size=256, epoch_time=3):
     """
     :param model_name:
@@ -76,17 +76,13 @@ def cnn_model_maker(model_name, p_keep_conv=1.0, p_keep_hidden=1.0,
     cnn.save(model_name)
 
 
-def num_recognition(img, model_name):
+def num_recognition(img, cnn):
     """
 
     :param img:
-    :param model_name:
+    :param cnn:
     :return:
     """
-    cnn = CNN()
-    print('loading model')
-    cnn.load_session(model_name)
-    print('load done')
     result = cnn.predict(img)
     return result
 
@@ -104,18 +100,34 @@ def regions_recognition(regions, model_name):
 
     for i, question_region in regions.items():
         question = []
+        stem = []
+        answer = []
+        flag = 0
         for j, number_region in question_region.get_sub_regions().items():
-            result = num_recognition(number_region.get_img(), model_name)
-            regions[i][j].set_recognition(str(result))
-            question.append(result)
+            # recognize numbers
+            result = num_recognition(number_region.get_img(), cnn)
+            # add the number recognition result to question region
+            regions[i].get_sub_regions()[j].set_recognition(str(result[0]))
+
+            question.append(str(result[0]))
+
+            if flag == 0:
+                stem.append(str(result[0]))
+            else:
+                answer.append(str(result[0]))
+
             if result == '=':
-                question.append(result)
-        tmp = ''.join(question)
-        regions[i].set_recognition(tmp)
+                flag = 1
+
+        regions[i].set_recognition(''.join(question))
+
+        stem = ''.join(stem)
+        answer = ''.join(answer)
         try:
-            regions[i].set_result(eval(tmp))
+            regions[i].set_result(eval(stem) == answer)
+            print('reco', stem, answer)
         except:
-            print(tmp)
+            print('error', stem, answer)
             # raise ValueError('the recognition is incorrect')
             pass
 

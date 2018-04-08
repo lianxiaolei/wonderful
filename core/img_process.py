@@ -68,8 +68,15 @@ def get_resize_padding_img(img, size, padding):
     :param padding:
     :return:
     """
-    sub_img = cv2.resize(img, size)
-    sub_img = np.pad(sub_img, padding, mode='constant')
+    if size and padding:
+        sub_img = cv2.resize(img, size)
+        sub_img = np.pad(sub_img, padding, mode='constant')
+        plt.imshow(sub_img)
+        plt.show()
+    else:
+        sub_img = cv2.resize(img, (28, 28))
+        plt.imshow(sub_img)
+        plt.show()
     return sub_img
 
 

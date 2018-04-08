@@ -28,13 +28,14 @@ class CNN(object):
         self.p_keep_hidden = p_keep_hidden
         self.epoch_time = epoch_time
 
-    def _init_weights(self, shape):
+    def _init_weights(self, shape, name=None):
         """
         初始化参数
         :param shape:
+        :param name:
         :return:
         """
-        return tf.Variable(tf.random_normal(shape, stddev=0.01))
+        return tf.Variable(tf.random_normal(shape, stddev=0.01), name=name)
 
     def _cnn_main(self, X, p_keep_conv, p_keep_hidden):
         """
@@ -92,13 +93,14 @@ class CNN(object):
             tf.nn.softmax_cross_entropy_with_logits(
                 logits=out, labels=Y))  # 交叉熵目标函数
 
-        train_op = tf.train.RMSPropOptimizer(0.001, 0.9) \
+        train_op = tf.train.AdamOptimizer(0.001, 0.9) \
             .minimize(cost)  # RMSPro算法最小化目标函数
 
         predict_op = tf.argmax(out, 1)  # 返回每个样本的预测结果
-        init = tf.global_variables_initializer()
-        self.sess.run(init)
 
+        init = tf.global_variables_initializer()
+
+        self.sess.run(init)
         for i in range(self.epoch_time):
             training_batch = zip(range(0, len(train_x), self.batch_size),
                                  range(self.batch_size, len(train_x) + 1, self.batch_size))
@@ -156,22 +158,7 @@ class CNN(object):
         :param model_name:
         :return:
         """
-        p_keep_conv = tf.placeholder("float")  # 卷积层的dropout概率
-        p_keep_hidden = tf.placeholder("float")  # 全连接层的dropout概率
-        X = tf.placeholder("float", [None, 28, 28, 1])
-        Y = tf.placeholder("float", [None, 10])
-
-        out = self._cnn_main(X, p_keep_conv, p_keep_hidden)
-
-        cost = tf.reduce_mean(
-            tf.nn.softmax_cross_entropy_with_logits(
-                logits=out, labels=Y))  # 交叉熵目标函数
-
-        train_op = tf.train.RMSPropOptimizer(0.001, 0.9) \
-            .minimize(cost)  # RMSPro算法最小化目标函数
-
-        predict_op = tf.argmax(out, 1)  # 返回每个样本的预测结果
-        init = tf.global_variables_initializer()
-        self.sess.run(init)
+        # init = tf.global_variables_initializer()
+        # self.sess.run(init)
         saver = tf.train.Saver()
         saver.restore(self.sess, model_name)
