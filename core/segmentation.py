@@ -3,6 +3,7 @@
 from bean.region import Region
 from collections import OrderedDict
 from core.img_process import *
+from skimage import morphology
 
 
 def get_areas(proj_list, epsilon=0):
@@ -33,7 +34,7 @@ def get_areas(proj_list, epsilon=0):
     return area_list
 
 
-def get_area_dict(img, row_list, col_list, rp_size=None, rp_padding=None):
+def get_area_dict(img, row_list, col_list, rp_size=None, rp_padding=None, skeletonize=False):
     """
     obtain the region dict with format {'x0_y0', region}
     :param img:
@@ -41,6 +42,7 @@ def get_area_dict(img, row_list, col_list, rp_size=None, rp_padding=None):
     :param col_list:
     :param rp_size:
     :param rp_padding:
+    :param skel:
     :return:
     """
     areas = OrderedDict()
@@ -49,18 +51,26 @@ def get_area_dict(img, row_list, col_list, rp_size=None, rp_padding=None):
             # x0 x1-x0 y0 y1-y0 are abscissa width ordinate height
             # judge whether the area is only-black
             sub_img = img[y0: y1, x0: x1]
+            # 去除较小的区域
             if np.sum(sub_img) <= 50: continue
             if rp_size and rp_padding:
+                sub_img = get_resize_padding_img(sub_img, size=rp_size, padding=rp_padding)
+                if skeletonize:
+                    # 细化字符
+                    array = np.zeros_like(sub_img)
+                    array[sub_img > 0.01] = 1
+                    array[sub_img <= 0.01] = 0
+                    skel = morphology.skeletonize(array)
+                    sub_img = sub_img * skel
                 region = Region(
-                    x0, y0, x1 - x0, y1 - y0, get_resize_padding_img(
-                        sub_img, size=rp_size, padding=rp_padding))
+                    x0, y0, x1 - x0, y1 - y0, sub_img)
             else:
                 region = Region(x0, y0, x1 - x0, y1 - y0, sub_img)
             areas['%s_%s' % (x0, y0)] = region
     return areas
 
 
-def project_cut(img, row_eps, col_eps, rp_size=None, rp_padding=None):
+def project_cut(img, row_eps, col_eps, rp_size=None, rp_padding=None, skel=False):
     """
     cut img with axis project
     :param img:
@@ -68,6 +78,7 @@ def project_cut(img, row_eps, col_eps, rp_size=None, rp_padding=None):
     :param col_eps:
     :param rp_size:
     :param rp_padding:
+    :param skel:
     :return:
     """
     row_proj = np.sum(img, axis=0)
@@ -78,6 +89,6 @@ def project_cut(img, row_eps, col_eps, rp_size=None, rp_padding=None):
 
     # questions area dict
     areas = get_area_dict(
-        img, row_list, col_list, rp_size=rp_size, rp_padding=rp_padding)
+        img, row_list, col_list, rp_size=rp_size, rp_padding=rp_padding, skeletonize=skel)
 
     return areas

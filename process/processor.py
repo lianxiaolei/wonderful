@@ -19,7 +19,7 @@ def cut(img, row_eps, col_eps):
         region_arr = region2ndarray(img, v)
 
         number_areas = project_cut(
-            region_arr, 0, 0, rp_size=(20, 24), rp_padding=((2,), (4,)))
+            region_arr, 0, 0, rp_size=(20, 24), rp_padding=((2,), (4,)), skel=True)
         # number_areas = project_cut(
         #     region_arr, 0, 0)
 
