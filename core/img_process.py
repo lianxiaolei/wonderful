@@ -60,7 +60,7 @@ def get_region_img(img, region):
            region.get_x(): region.get_x() + region.get_width()]
 
 
-def get_resize_padding_img(img, size, padding):
+def get_resize_padding_img(img, size=None, padding=None):
     """
 
     :param img:
@@ -71,6 +71,7 @@ def get_resize_padding_img(img, size, padding):
     if size and padding:
         sub_img = cv2.resize(img, size)
         sub_img = np.pad(sub_img, padding, mode='constant')
+        sub_img = np.pad(sub_img, ((2,), (2,)), mode='constant')
     else:
         sub_img = cv2.resize(img, (28, 28))
     return sub_img
