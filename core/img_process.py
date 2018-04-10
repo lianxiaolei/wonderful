@@ -4,6 +4,7 @@ import numpy as np
 import cv2
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
+import random
 
 
 def read_img(file_name, color_inv_norm=True):
@@ -115,15 +116,11 @@ def save_all_regions(regions, dir_name, layer=0):
     :param layer:
     :return:
     """
-    k = 0
     for i, question_region in regions.items():
         if layer in [0, 1]:
-            cv2.imwrite('%s/%s.jpg' % (dir_name[0], k), question_region.get_img() * 255.0)
+            cv2.imwrite('%s/%s.jpg' % (dir_name[0], random.randint(1000, 9999)), question_region.get_img() * 255.0)
             cv2.destroyAllWindows()
-            k += 1
         if layer in [0, 2]:
-            l = 0
             for j, number_region in question_region.get_sub_regions().items():
-                cv2.imwrite('%s/%s.jpg' % (dir_name[1], l), number_region.get_img() * 255.0)
+                cv2.imwrite('%s/%s.jpg' % (dir_name[1], random.randint(1000, 9999)), number_region.get_img() * 255.0)
                 cv2.destroyAllWindows()
-                l += 1

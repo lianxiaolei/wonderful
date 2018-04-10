@@ -33,13 +33,14 @@ def get_areas(proj_list, epsilon=0):
     return area_list
 
 
-def get_area_dict(img, row_list, col_list, resize=False):
+def get_area_dict(img, row_list, col_list, resize=False, display=False):
     """
     obtain the region dict with format {'x0_y0', region}
     :param img:
     :param row_list:
     :param col_list:
     :param resize:
+    :param display:
     :return:
     """
     areas = OrderedDict()
@@ -49,7 +50,7 @@ def get_area_dict(img, row_list, col_list, resize=False):
             # judge whether the area is only-black
             sub_img = img[y0: y1, x0: x1]
             # 去除较小的区域
-            if np.sum(sub_img) <= 20:
+            if np.sum(sub_img) <= 50:
                 continue
 
             if resize:
@@ -57,24 +58,34 @@ def get_area_dict(img, row_list, col_list, resize=False):
                     change_rate = (y1 - y0 - 24) / (y1 - y0)
                     changed_width = int((x1 - x0) * (1 - change_rate))
                     if changed_width % 2 == 1:
-                        changed_width -= 1
-                    pad = np.ceil((24 - changed_width) / 2)
+                        changed_width += 1
+                    if changed_width == 0:
+                        changed_width = 2
+                    pad = (24 - changed_width) / 2
                     padding = ((0,), (int(pad),))
                     # print(y1 - y0, x1 - x0, 1 - change_rate, changed_width, pad)
-                    sub_img = get_resize_padding_img(sub_img, size=(changed_width, 24), padding=padding)
                     # plt.imshow(sub_img)
                     # plt.show()
+                    sub_img = get_resize_padding_img(sub_img, size=(changed_width, 24), padding=padding)
+                    if display:
+                        plt.imshow(sub_img)
+                        plt.show()
                 else:  # 水平边较长
                     change_rate = (x1 - x0 - 24) / (x1 - x0)
                     changed_height = int((y1 - y0) * (1 - change_rate))
                     if changed_height % 2 == 1:
-                        changed_height -= 1
-                    pad = np.ceil((24 - changed_height) / 2)
+                        changed_height += 1
+                    if changed_height == 0:
+                        changed_height = 2
+                    pad = (24 - changed_height) / 2
                     padding = ((int(pad),), (0,))
                     # print(y1 - y0, x1 - x0, 1 - change_rate, changed_height, pad)
-                    sub_img = get_resize_padding_img(sub_img, size=(24, changed_height), padding=padding)
                     # plt.imshow(sub_img)
                     # plt.show()
+                    sub_img = get_resize_padding_img(sub_img, size=(24, changed_height), padding=padding)
+                    if display:
+                        plt.imshow(sub_img)
+                        plt.show()
 
             region = Region(x0, y0, x1 - x0, y1 - y0, sub_img)
 
@@ -82,13 +93,14 @@ def get_area_dict(img, row_list, col_list, resize=False):
     return areas
 
 
-def project_cut(img, row_eps, col_eps, resize=False):
+def project_cut(img, row_eps, col_eps, resize=False, display=False):
     """
     cut img with axis project
     :param img:
     :param row_eps:
     :param col_eps:
     :param resize:
+    :param display:
     :return:
     """
     row_proj = np.sum(img, axis=0)
@@ -99,6 +111,6 @@ def project_cut(img, row_eps, col_eps, resize=False):
 
     # questions area dict
     areas = get_area_dict(
-        img, row_list, col_list, resize=resize)
+        img, row_list, col_list, resize=resize, display=display)
 
     return areas

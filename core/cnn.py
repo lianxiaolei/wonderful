@@ -20,7 +20,7 @@ class CNN(object):
         self.w2 = self._init_weights([3, 3, 32, 64])  # 第二层卷积核大小为3x3,输入32个feature map,输出64个feature map
         self.w3 = self._init_weights([3, 3, 64, 128])  # 第三层卷积核大小为3x3,输入64个feature map,输出128个feature map
         self.w4 = self._init_weights([128 * 4 * 4, 625])  # FC 128 * 4 * 4 inputs, 625 outputs
-        self.w_o = self._init_weights([625, 10])  # FC 625 inputs, 10 outputs (labels)
+        self.w_o = self._init_weights([625, 17])  # FC 625 inputs, 17 outputs (labels)
         self.batch_size = batch_size
         self.test_size = test_size
         self.sess = tf.Session()  # tensorflow session
@@ -73,7 +73,7 @@ class CNN(object):
 
         return out
 
-    def fit(self, train_x, train_y, test_x, test_y):
+    def fit(self, train_x, train_y, test_x, test_y, extra_tx, extra_ty):
         """
 
         :param train_x:
@@ -85,7 +85,7 @@ class CNN(object):
         p_keep_conv = tf.placeholder("float")  # 卷积层的dropout概率
         p_keep_hidden = tf.placeholder("float")  # 全连接层的dropout概率
         X = tf.placeholder("float", [None, 28, 28, 1])
-        Y = tf.placeholder("float", [None, 10])
+        Y = tf.placeholder("float", [None, 17])
 
         out = self._cnn_main(X, p_keep_conv, p_keep_hidden)
 
@@ -105,10 +105,12 @@ class CNN(object):
             training_batch = zip(range(0, len(train_x), self.batch_size),
                                  range(self.batch_size, len(train_x) + 1, self.batch_size))
             for start, end in training_batch:
-                self.sess.run(train_op, feed_dict={X: train_x[start: end],
-                                                   Y: train_y[start: end],
-                                                   p_keep_conv: self.p_keep_conv,
-                                                   p_keep_hidden: self.p_keep_hidden})
+                self.sess.run(
+                    train_op,
+                    feed_dict={X: np.vstack([train_x[start:end], extra_tx]),
+                               Y: np.vstack([train_y[start:end], extra_ty]),
+                               p_keep_conv: self.p_keep_conv,
+                               p_keep_hidden: self.p_keep_hidden})
 
             test_indices = np.arange(len(test_x))
             np.random.shuffle(test_indices)
