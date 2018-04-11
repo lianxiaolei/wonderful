@@ -35,7 +35,7 @@ def region2ndarray(img, region):
     :return:
     """
     array = img[region.get_y(): region.get_y() + region.get_height(),
-            region.get_x(): region.get_x() + region.get_width()]
+                region.get_x(): region.get_x() + region.get_width()]
     return array
 
 

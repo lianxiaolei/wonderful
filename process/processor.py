@@ -77,18 +77,14 @@ def get_extra_data(base_path):
         jpgs = os.listdir(os.path.join(base_path, num))
         for jpg in jpgs:
             fname = os.path.join(base_path, num, jpg)
-            # pic = 1 - cv2.imread(fname, cv2.IMREAD_GRAYSCALE) / 255.0
             pic = read_img(fname, color_inv_norm=False)
             train_data.append(pic)
             train_label.append(lbl[int(num)])
     train_data = np.array(train_data)
     train_label = np.array(train_label)
-    # for i in range(6):
-    #     train_data = np.vstack([train_data, train_data])
-    #     train_label = np.vstack([train_label, train_label])
-    print(train_data.shape, train_label.shape)
-    print(train_data)
-    print(np.argmax(train_label, axis=1))
+    # print(train_data.shape, train_label.shape)
+    # print(train_data)
+    # print(np.argmax(train_label, axis=1))
     return train_data, train_label
 
 
