@@ -13,6 +13,7 @@ def cut(img, row_eps, col_eps, display=False):
     :param img:
     :param row_eps:
     :param col_eps:
+    :param display:
     :return:
     """
     question_areas = project_cut(img, row_eps, col_eps)
@@ -50,7 +51,7 @@ def save_region_as_jpg(fname, img, region, diastolic=True):
 def get_extra_data(base_path):
     """
 
-    :param dir_name:
+    :param base_path:
     :return:
     """
     nums = os.listdir(base_path)
@@ -120,8 +121,10 @@ def alg_train(model_name, p_keep_conv=1.0, p_keep_hidden=1.0,
     extra_data = extra_data.reshape(-1, 28, 28, 1)
     print('load extra data done')
     print('training')
+    import time
+    tmp_time = time.time()
     cnn.fit(train_x, train_y, test_x, test_y, extra_tx=extra_data, extra_ty=extra_label)
-
+    print('time cost:', time.time() - tmp_time)
     cnn.save(model_name)
 
 

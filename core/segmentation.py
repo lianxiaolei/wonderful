@@ -54,6 +54,7 @@ def get_area_dict(img, row_list, col_list, resize=False, display=False):
                 continue
 
             if resize:
+                # sub_img = cv2.blur(sub_img, (4, 4))
                 if x1 - x0 < y1 - y0:  # 铅直边较长
                     change_rate = (y1 - y0 - 24) / (y1 - y0)
                     changed_width = int((x1 - x0) * (1 - change_rate))
