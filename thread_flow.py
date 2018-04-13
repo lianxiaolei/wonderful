@@ -15,19 +15,36 @@ def run(file_name):
     regions = cut(img, row_eps=img.shape[1] / 30, col_eps=10, display=False)
     # alg_train('model/Test_CNN_Model.ckpt', epoch_time=3, p_keep_conv=0.8, p_keep_hidden=0.6)
     regions_recognition(regions, 'model/Test_CNN_Model.ckpt')
-    # show_all_regions(img, regions, layer=0)
     # save_all_regions(regions, dir_name=['data/ques', 'data/nums'])
+    # show_all_regions(img, regions, layer=0)
+
+
+def get_dilate_img(base_path):
+    nums = os.listdir(base_path)
+    for num in nums:
+        jpgs = os.listdir(os.path.join(base_path, num))
+        for jpg in jpgs:
+            fname = os.path.join(base_path, num, jpg)
+            pic = read_img(fname, color_inv_norm=False)
+            kernel = np.ones((2, 2), np.uint8)
+            img = cv2.dilate(pic, kernel, iterations=1)
+            cv2.imwrite(fname, img * 255.0)
+            cv2.destroyAllWindows()
 
 
 if __name__ == '__main__':
 
-    # run('images/10.jpg')
+    run('images/10.jpg')
     # run('images/11.png')
     # run('images/12.png')
     # run('images/13.jpg')
-    # run('images/14.jpg')
+    # run('images/111.jpg')
+    # run('images/112.jpg')
+    # run('images/113.jpg')
+    # run('images/114.jpg')
+    # run('images/115.jpg')
     # run('images/zx.jpg')
-    run('images/zx2.png')
+    # run('images/zx2.png')
     # run('images/zx3.png')
     # run('images/zm.jpg')
     # run('images/zm1.jpg')
@@ -36,4 +53,5 @@ if __name__ == '__main__':
     # run('images/mine2.jpg')
     # run('images/mine3.jpg')
     # run('images/mine4.jpg')
-    # run('images/116.jpg')
+    # run('images/mine5.jpg')
+    # get_dilate_img('data/jpg')

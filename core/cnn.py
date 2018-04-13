@@ -19,8 +19,8 @@ class CNN(object):
         self.w = self._init_weights([3, 3, 1, 32])  # 第一层卷积核大小为3x3,输入一张图,输出32个feature map
         self.w2 = self._init_weights([3, 3, 32, 64])  # 第二层卷积核大小为3x3,输入32个feature map,输出64个feature map
         self.w3 = self._init_weights([3, 3, 64, 128])  # 第三层卷积核大小为3x3,输入64个feature map,输出128个feature map
-        self.w4 = self._init_weights([128 * 4 * 4, 625])  # FC 128 * 4 * 4 inputs, 625 outputs
-        self.w_o = self._init_weights([625, 17])  # FC 625 inputs, 17 outputs (labels)
+        self.w4 = self._init_weights([128 * 4 * 4, 100])  # FC 128 * 4 * 4 inputs, 625 outputs
+        self.w_o = self._init_weights([100, 17])  # FC 625 inputs, 17 outputs (labels)
         self.batch_size = batch_size
         self.test_size = test_size
         self.sess = tf.Session()  # tensorflow session
