@@ -3,6 +3,7 @@
 from process.processor import *
 import warnings
 warnings.filterwarnings("ignore")
+import tensorflow as tf
 
 
 def run(file_name):
@@ -12,7 +13,7 @@ def run(file_name):
     :return:
     """
     img = read_img(file_name, color_inv_norm=True)
-    regions = cut(img, row_eps=img.shape[1] / 30, col_eps=10, display=False)
+    regions = cut(img, row_eps=img.shape[1] / 30, col_eps=10, display=True)
     # alg_train('model/Test_CNN_Model.ckpt', epoch_time=3, p_keep_conv=0.8, p_keep_hidden=0.6)
     regions_recognition(regions, 'model/Test_CNN_Model.ckpt')
     # save_all_regions(regions, dir_name=['data/ques', 'data/nums'])
@@ -34,16 +35,15 @@ def get_dilate_img(base_path):
 
 if __name__ == '__main__':
 
-    run('images/10.jpg')
+    # run('images/10.jpg')
     # run('images/11.png')
     # run('images/12.png')
-    # run('images/13.jpg')
-    # run('images/111.jpg')
-    # run('images/112.jpg')
-    # run('images/113.jpg')
-    # run('images/114.jpg')
-    # run('images/115.jpg')
-    # run('images/zx.jpg')
+    # run('images/111.jpg')  # bad
+    # run('images/112.jpg')  # bad
+    # run('images/113.jpg')  # bad
+    # run('images/114.jpg')  # bad
+    # run('images/115.jpg')  # bad
+    run('images/zx.jpg')
     # run('images/zx2.png')
     # run('images/zx3.png')
     # run('images/zm.jpg')
