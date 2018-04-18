@@ -86,8 +86,8 @@ def get_area_dict(img, row_list, col_list, resize=False, display=False):
                     # plt.imshow(sub_img)
                     # plt.show()
                     sub_img = get_resize_padding_img(sub_img, size=(24, changed_height), padding=padding)
-                    kernel = np.ones((2, 2), np.uint8)
-                    sub_img = cv2.dilate(sub_img, kernel, iterations=1)
+                    # kernel = np.ones((2, 2), np.uint8)
+                    # sub_img = cv2.dilate(sub_img, kernel, iterations=1)
                     if display:
                         plt.imshow(sub_img)
                         plt.show()
