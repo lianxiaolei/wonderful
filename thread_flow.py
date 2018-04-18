@@ -37,15 +37,14 @@ if __name__ == '__main__':
 
     # run('images/10.jpg')
     # run('images/11.png')
-    # run('images/12.png')
+    run('images/12.png')
     # run('images/111.jpg')  # bad
     # run('images/112.jpg')  # bad
     # run('images/113.jpg')  # bad
     # run('images/114.jpg')  # bad
     # run('images/115.jpg')  # bad
-    run('images/zx.jpg')
+    # run('images/zx.jpg')
     # run('images/zx2.png')
-    # run('images/zx3.png')
     # run('images/zm.jpg')
     # run('images/zm1.jpg')
     # run('images/mine.jpg')
@@ -54,4 +53,5 @@ if __name__ == '__main__':
     # run('images/mine3.jpg')
     # run('images/mine4.jpg')
     # run('images/mine5.jpg')
+    # run('images/mine6.jpg')
     # get_dilate_img('data/jpg')

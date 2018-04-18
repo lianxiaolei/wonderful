@@ -15,7 +15,6 @@ def read_img(file_name, color_inv_norm=True):
     :return:
     """
     img = cv2.imread(file_name, cv2.IMREAD_GRAYSCALE)
-
     if color_inv_norm:
         img = 255 - img
         img[img < 150] = 0
@@ -23,7 +22,6 @@ def read_img(file_name, color_inv_norm=True):
     else:
         img[img < 50] = 0
         img = img / 255.0
-
     return img
 
 
