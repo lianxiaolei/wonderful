@@ -40,6 +40,9 @@ class CNN(object):
     def _cnn_main(self, X, p_keep_conv, p_keep_hidden):
         """
 
+        :param X:
+        :param p_keep_conv:
+        :param p_keep_hidden:
         :return:
         """
         # 第一个卷积层:padding=SAME,保证输出的feature map与输入矩阵的大小相同
@@ -72,6 +75,69 @@ class CNN(object):
         out = tf.matmul(l4, self.w_o)
 
         return out
+
+    def _alex_main(self, X, p_keep_conv, p_keep_hidden):
+        """
+
+        :param X:
+        :param p_keep_conv:
+        :param p_keep_hidden:
+        :return:
+        """
+
+        kernel = tf.Variable(tf.truncated_normal([11, 11, 3, 96], stddev=1e-1))
+        biases = tf.Variable(tf.constant(0.0, shape=[96]))
+        conv1 = tf.nn.conv2d(X, kernel, [1, 4, 4, 1], padding='SAME')
+        conv1 = tf.nn.relu(tf.nn.bias_add(conv1, biases))
+
+        lrn1 = tf.nn.local_response_normalization(conv1, alpha=1e-4, beta=0.75, depth_radius=2, bias=2.0)
+
+        pool1 = tf.nn.max_pool(lrn1, [1, 3, 3, 1], [1, 2, 2, 1], padding='VALID')
+
+        kernel = tf.Variable(tf.truncated_normal([5, 5, 96, 256], stddev=1e-1))
+        biases = tf.Variable(tf.constant(0.0, shape=[256]))
+        conv2 = tf.nn.conv2d(pool1, kernel, [1, 1, 1, 1], padding='SAME')
+        conv2 = tf.nn.relu(tf.nn.bias_add(conv2, biases))
+
+        lrn2 = tf.nn.local_response_normalization(conv2, alpha=1e-4, beta=0.75, depth_radius=2, bias=2.0)
+
+        pool2 = tf.nn.max_pool(lrn2, [1, 3, 3, 1], [1, 2, 2, 1], padding='VALID')
+
+        kernel = tf.Variable(tf.truncated_normal([3, 3, 256, 256], stddev=1e-1))
+        biases = tf.Variable(tf.constant(0.0, shape=[256]))
+        conv3 = tf.nn.conv2d(pool2, kernel, [1, 1, 1, 1], padding='SAME')
+        conv3 = tf.nn.relu(tf.nn.bias_add(conv3, biases))
+
+        kernel = tf.Variable(tf.truncated_normal([3, 3, 256, 384], stddev=1e-1))
+        biases = tf.Variable(tf.constant(0.0, shape=[384]))
+        conv4 = tf.nn.conv2d(conv3, kernel, [1, 1, 1, 1], padding='SAME')
+        conv4 = tf.nn.relu(tf.nn.bias_add(conv4, biases))
+
+        kernel = tf.Variable(tf.truncated_normal([3, 3, 384, 256], stddev=1e-1))
+        biases = tf.Variable(tf.constant(0.0, shape=[256]))
+        conv5 = tf.nn.conv2d(conv4, kernel, [1, 1, 1, 1], padding='SAME')
+        conv5 = tf.nn.relu(tf.nn.bias_add(conv5, biases))
+
+        pool5 = tf.nn.max_pool(conv5, [1, 3, 3, 1], [1, 2, 2, 1], padding='VALID')
+
+        input_shape = pool5.get_shape().as_list()
+        new_shape = input_shape[1] * input_shape[2] * input_shape[3]
+        weights = tf.Variable(tf.truncated_normal([new_shape, 4096], stddev=1e-1))
+        biases = tf.Variable(tf.constant(0.0, shape=[4096]))
+        fc6 = tf.matmul(tf.reshape(pool5, [-1, new_shape]), weights) + biases
+        fc6 = tf.nn.relu(fc6)
+
+        weights = tf.Variable(tf.truncated_normal([4096, 4096], stddev=1e-1))
+        biases = tf.Variable(tf.constant(0.0, shape=[4096]))
+        fc7 = tf.matmul(fc6, weights) + biases
+        fc7 = tf.nn.relu(fc7)
+
+        weights = tf.Variable(tf.truncated_normal([4096, 1000], stddev=1e-1))
+        biases = tf.Variable(tf.constant(0.0, shape=[1000]))
+        fc8 = tf.matmul(fc7, weights) + biases
+        fc8 = tf.nn.softmax(fc8)
+
+        return fc8
 
     def fit(self, train_x, train_y, test_x, test_y, extra_tx, extra_ty):
         """
@@ -111,6 +177,12 @@ class CNN(object):
                                Y: np.vstack([train_y[start:end], extra_ty]),
                                p_keep_conv: self.p_keep_conv,
                                p_keep_hidden: self.p_keep_hidden})
+                # self.sess.run(
+                #     train_op,
+                #     feed_dict={X: extra_tx,
+                #                Y: extra_ty,
+                #                p_keep_conv: self.p_keep_conv,
+                #                p_keep_hidden: self.p_keep_hidden})
 
             test_indices = np.arange(len(test_x))
             np.random.shuffle(test_indices)

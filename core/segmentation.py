@@ -33,6 +33,39 @@ def get_areas(proj_list, epsilon=0):
     return area_list
 
 
+def get_non0_index_scope(l):
+    """
+
+    :param l:
+    :return:
+    """
+    if l[0]:
+        start = 0
+    else:
+        start = l.index(True)
+    l.reverse()
+    if l[0]:
+        end = 0
+    else:
+        end = l.index(True)
+    end = len(l) - end
+    return start, end
+
+
+def get_min_content_area(img):
+    """
+
+    :param img:
+    :return:
+    """
+    col_proj = (np.sum(img, axis=0) != 0).tolist()
+    row_proj = (np.sum(img, axis=1) != 0).tolist()
+    col_start, col_end = get_non0_index_scope(col_proj)
+    row_start, row_end = get_non0_index_scope(row_proj)
+
+    return row_start, row_end, col_start, col_end
+
+
 def get_area_dict(img, row_list, col_list, resize=False, display=False):
     """
     obtain the region dict with format {'x0_y0', region}
@@ -53,41 +86,64 @@ def get_area_dict(img, row_list, col_list, resize=False, display=False):
             if np.sum(sub_img) <= 5:
                 continue
 
+            # 中心化图像
+            row_start, row_end, col_start, col_end = get_min_content_area(sub_img)
+            sub_img = sub_img[row_start: row_end, col_start: col_end]
+            # print(row_start, row_end, col_start, col_end)
+
             if resize:
                 # sub_img = cv2.blur(sub_img, (4, 4))
-                if x1 - x0 < y1 - y0:  # 铅直边较长
-                    change_rate = (y1 - y0 - 24) / float((y1 - y0))
-                    changed_width = int((x1 - x0) * (1 - change_rate))
+                # if x1 - x0 < y1 - y0:  # 铅直边较长
+                #     change_rate = (y1 - y0 - 22) / float((y1 - y0))
+                #     changed_width = int((x1 - x0) * (1 - change_rate))
+
+                if col_end - col_start < row_end - row_start:  # 铅直边较长
+                    change_rate = (row_end - row_start - 22) / float((row_end - row_start))
+                    changed_width = int((col_end - col_start) * (1 - change_rate))
+
                     if changed_width % 2 == 1:
                         changed_width += 1
                     if changed_width == 0:
                         changed_width = 2
-                    pad = (24 - changed_width) / 2
+                    pad = (22 - changed_width) / 2
                     padding = ((0,), (int(pad),))
+
                     # print(y1 - y0, x1 - x0, 1 - change_rate, changed_width, pad)
                     # plt.imshow(sub_img)
                     # plt.show()
-                    sub_img = get_resize_padding_img(sub_img, size=(changed_width, 24), padding=padding)
-                    kernel = np.ones((2, 2), np.uint8)
-                    sub_img = cv2.dilate(sub_img, kernel, iterations=1)
+
+                    sub_img = get_resize_padding_img(sub_img, size=(changed_width, 22), padding=padding)
+
+                    # kernel = np.ones((2, 2), np.uint8)
+                    # sub_img = cv2.dilate(sub_img, kernel, iterations=1)
+
                     if display:
                         plt.imshow(sub_img)
                         plt.show()
+
                 else:  # 水平边较长
-                    change_rate = (x1 - x0 - 24) / float((x1 - x0))
-                    changed_height = int((y1 - y0) * (1 - change_rate))
+                    # change_rate = (x1 - x0 - 22) / float((x1 - x0))
+                    # changed_height = int((y1 - y0) * (1 - change_rate))
+
+                    change_rate = (col_end - col_start - 22) / float((col_end - col_start))
+                    changed_height = int((row_end - row_start) * (1 - change_rate))
+
                     if changed_height % 2 == 1:
                         changed_height += 1
                     if changed_height == 0:
                         changed_height = 2
-                    pad = (24 - changed_height) / 2
+                    pad = (22 - changed_height) / 2
                     padding = ((int(pad),), (0,))
+
                     # print(y1 - y0, x1 - x0, 1 - change_rate, changed_height, pad)
                     # plt.imshow(sub_img)
                     # plt.show()
-                    sub_img = get_resize_padding_img(sub_img, size=(24, changed_height), padding=padding)
+
+                    sub_img = get_resize_padding_img(sub_img, size=(22, changed_height), padding=padding)
+
                     # kernel = np.ones((2, 2), np.uint8)
                     # sub_img = cv2.dilate(sub_img, kernel, iterations=1)
+
                     if display:
                         plt.imshow(sub_img)
                         plt.show()

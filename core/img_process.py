@@ -15,15 +15,17 @@ def read_img(file_name, color_inv_norm=True):
     :return:
     """
     img = cv2.imread(file_name, cv2.IMREAD_GRAYSCALE)
-
+    plt.imshow(img)
+    plt.show()
     if color_inv_norm:
         img = 255 - img
-        img[img < 150] = 0
+        img[img < 128] = 0
         img = img / 255.0
     else:
         img[img < 50] = 0
         img = img / 255.0
-
+    plt.imshow(img)
+    plt.show()
     return img
 
 
@@ -72,7 +74,7 @@ def get_resize_padding_img(img, size=None, padding=None):
     if size and padding:
         sub_img = cv2.resize(img, size)
         sub_img = np.pad(sub_img, padding, mode='constant')
-        sub_img = np.pad(sub_img, ((2,), (2,)), mode='constant')
+        sub_img = np.pad(sub_img, ((3,), (3,)), mode='constant')
     else:
         sub_img = cv2.resize(img, (28, 28))
     return sub_img
