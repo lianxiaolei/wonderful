@@ -37,16 +37,17 @@ if __name__ == '__main__':
 
     # run('images/10.jpg')
     # run('images/11.png')
-    run('images/12.png')
+    # run('images/12.png')
     # run('images/111.jpg')  # bad
     # run('images/112.jpg')  # bad
-    run('images/113.jpg')  # bad
+    # run('images/113.jpg')  # bad
     # run('images/114.jpg')  # bad
     # run('images/115.jpg')  # bad
     # run('images/zx.jpg')
-    # run('images/zx2.png')
+    run('images/zx1.jpg')
     # run('images/zm.jpg')
     # run('images/zm1.jpg')
+    # run('images/zm2.jpg')
     # run('images/mine.jpg')
     # run('images/mine1.jpg')
     # run('images/mine2.jpg')
