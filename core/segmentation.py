@@ -56,7 +56,7 @@ def get_area_dict(img, row_list, col_list, resize=False, display=False):
             if resize:
                 # sub_img = cv2.blur(sub_img, (4, 4))
                 if x1 - x0 < y1 - y0:  # 铅直边较长
-                    change_rate = (y1 - y0 - 24) / (y1 - y0)
+                    change_rate = (y1 - y0 - 24) / float((y1 - y0))
                     changed_width = int((x1 - x0) * (1 - change_rate))
                     if changed_width % 2 == 1:
                         changed_width += 1
@@ -74,7 +74,7 @@ def get_area_dict(img, row_list, col_list, resize=False, display=False):
                         plt.imshow(sub_img)
                         plt.show()
                 else:  # 水平边较长
-                    change_rate = (x1 - x0 - 24) / (x1 - x0)
+                    change_rate = (x1 - x0 - 24) / float((x1 - x0))
                     changed_height = int((y1 - y0) * (1 - change_rate))
                     if changed_height % 2 == 1:
                         changed_height += 1

@@ -40,7 +40,7 @@ if __name__ == '__main__':
     run('images/12.png')
     # run('images/111.jpg')  # bad
     # run('images/112.jpg')  # bad
-    # run('images/113.jpg')  # bad
+    run('images/113.jpg')  # bad
     # run('images/114.jpg')  # bad
     # run('images/115.jpg')  # bad
     # run('images/zx.jpg')
