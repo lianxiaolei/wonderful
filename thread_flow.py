@@ -3,7 +3,6 @@
 from process.processor import *
 import warnings
 warnings.filterwarnings("ignore")
-import tensorflow as tf
 
 
 def run(file_name):
@@ -44,7 +43,7 @@ if __name__ == '__main__':
     # run('images/114.jpg')  # bad
     # run('images/115.jpg')  # bad
     # run('images/zx.jpg')
-    run('images/zx1.jpg')
+    # run('images/zx1.jpg')
     # run('images/zm.jpg')
     # run('images/zm1.jpg')
     # run('images/zm2.jpg')
@@ -53,6 +52,6 @@ if __name__ == '__main__':
     # run('images/mine2.jpg')
     # run('images/mine3.jpg')
     # run('images/mine4.jpg')
-    # run('images/mine5.jpg')
-    # run('images/mine6.jpg')
+    # run('images/bj1.jpg')
+    run('images/mine6.jpg')
     # get_dilate_img('data/jpg')
