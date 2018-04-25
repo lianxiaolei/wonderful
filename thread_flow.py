@@ -3,7 +3,6 @@
 from process.processor import *
 import warnings
 warnings.filterwarnings("ignore")
-import tensorflow as tf
 
 
 def run(file_name):
@@ -13,7 +12,7 @@ def run(file_name):
     :return:
     """
     img = read_img(file_name, color_inv_norm=True)
-    regions = cut(img, row_eps=img.shape[1] / 30, col_eps=10, display=True)
+    regions = cut(img, row_eps=img.shape[1] / 30, col_eps=10, display=False)
     # alg_train('model/Test_CNN_Model.ckpt', epoch_time=3, p_keep_conv=0.8, p_keep_hidden=0.6)
     regions_recognition(regions, 'model/Test_CNN_Model.ckpt')
     # save_all_regions(regions, dir_name=['data/ques', 'data/nums'])
@@ -44,7 +43,7 @@ if __name__ == '__main__':
     # run('images/114.jpg')  # bad
     # run('images/115.jpg')  # bad
     # run('images/zx.jpg')
-    run('images/zx1.jpg')
+    # run('images/zx1.jpg')
     # run('images/zm.jpg')
     # run('images/zm1.jpg')
     # run('images/zm2.jpg')
@@ -53,6 +52,8 @@ if __name__ == '__main__':
     # run('images/mine2.jpg')
     # run('images/mine3.jpg')
     # run('images/mine4.jpg')
-    # run('images/mine5.jpg')
     # run('images/mine6.jpg')
+    # run('images/mine7.jpg')
+    # run('images/cz.jpg')
+    run('images/cz1.jpg')
     # get_dilate_img('data/jpg')

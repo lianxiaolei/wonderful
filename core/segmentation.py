@@ -83,7 +83,7 @@ def get_area_dict(img, row_list, col_list, resize=False, display=False):
             # judge whether the area is only-black
             sub_img = img[y0: y1, x0: x1]
             # 去除较小的区域
-            if np.sum(sub_img) <= 5:
+            if np.sum(sub_img) <= 10:
                 continue
 
             # 中心化图像

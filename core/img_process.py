@@ -15,10 +15,23 @@ def read_img(file_name, color_inv_norm=True):
     :return:
     """
     img = cv2.imread(file_name, cv2.IMREAD_GRAYSCALE)
-    plt.imshow(img)
-    plt.show()
+
     if color_inv_norm:
         img = 255 - img
+        plt.imshow(img)
+        plt.show()
+
+        # img = cv2.adaptiveThreshold(
+        #     img, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 4)
+        # print(img)
+
+        kernel = np.ones((5, 5), np.uint8)
+        # img = cv2.morphologyEx(img, cv2.MORPH_OPEN, kernel)
+        img = cv2.morphologyEx(img, cv2.MORPH_CLOSE, kernel)
+
+        # img = cv2.erode(img, kernel, iterations=1)
+        # img = cv2.dilate(img, kernel, iterations=1)
+
         img[img < 128] = 0
         img = img / 255.0
     else:
