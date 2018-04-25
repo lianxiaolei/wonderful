@@ -21,24 +21,44 @@ def read_img(file_name, color_inv_norm=True):
         plt.imshow(img)
         plt.show()
 
-        # img = cv2.adaptiveThreshold(
-        #     img, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 4)
-        # print(img)
+        img = remove_back(img, np.ones((5, 5), np.uint8))
 
-        kernel = np.ones((5, 5), np.uint8)
-        # img = cv2.morphologyEx(img, cv2.MORPH_OPEN, kernel)
-        img = cv2.morphologyEx(img, cv2.MORPH_CLOSE, kernel)
-
-        # img = cv2.erode(img, kernel, iterations=1)
-        # img = cv2.dilate(img, kernel, iterations=1)
-
-        img[img < 128] = 0
-        img = img / 255.0
+        # img[img < 128] = 0
+        # img = img / 255.0
     else:
         img[img < 50] = 0
         img = img / 255.0
     plt.imshow(img)
     plt.show()
+    return img
+
+
+def remove_back(img, kernel):
+    """
+
+    :param img:
+    :param kernel:
+    :return:
+    """
+    plt.imshow(img)
+    plt.show()
+
+    mask = cv2.adaptiveThreshold(img, 1, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, 5, 7)
+    plt.imshow(mask)
+    plt.show()
+
+    kernel = np.ones((5, 5), np.uint8)
+
+    img_mask = img * (1 - mask)
+
+    img_mask = cv2.morphologyEx(img_mask, cv2.MORPH_CLOSE, kernel, iterations=2)
+    img_mask = cv2.morphologyEx(img_mask, cv2.MORPH_OPEN, kernel, iterations=1)
+
+    img_mask[img_mask > 0] = 1
+    img[img < 100] = 0
+    img = img * img_mask
+    img = img / 255.0
+
     return img
 
 
