@@ -3,32 +3,46 @@
 import numpy as np
 import cv2
 import matplotlib.pyplot as plt
+# from process.processor import *
 import matplotlib.patches as patches
 import random
 
-img = cv2.imread('images/111.jpg', cv2.IMREAD_GRAYSCALE)
+# img = cv2.imread("images/111.jpg", cv2.IMREAD_GRAYSCALE)
+img = cv2.imread("images/cz.jpg", cv2.IMREAD_GRAYSCALE)
+# img = cv2.imread("images/bk.jpg", cv2.IMREAD_GRAYSCALE)
+# img = cv2.imread("images/mine10.jpg", cv2.IMREAD_GRAYSCALE)
+img = 255 - img
+
+img1 = img.copy()
+img1[img1 < 128] = 0
+img1 = img1 / 255.0
+
 plt.imshow(img)
 plt.show()
-cv2.imshow(img)
-frame = 2
-bs = cv2.createBackgroundSubtractorKNN(
-    detectShadows=True)  # 背景减除器，设置阴影检测
-fg_mask = bs.apply(frame)
 
-th = cv2.threshold(fg_mask.copy(), 244, 255, cv2.THRESH_BINARY)[1]
-dilated = cv2.dilate(th, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (8, 3)), iterations=2)
-# 获取所有检测框
-image, contours, hier = cv2.findContours(dilated, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+mask = cv2.adaptiveThreshold(img, 1, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, 5, 7)
+plt.imshow(mask)
+plt.show()
 
-for c in contours:
-    # 获取矩形框边界坐标
-    x, y, w, h = cv2.boundingRect(c)
-    # 计算矩形框的面积
-    area = cv2.contourArea(c)
-    if 500 < area < 3000:
-        cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+kernel = np.ones((5, 5), np.uint8)
 
-cv2.imshow("detection", frame)
-cv2.imshow("back", dilated)
-cv2.waitKey()
-cv2.destroyAllWindows()
+img_mask = img * (1 - mask)
+
+
+img_mask = cv2.morphologyEx(img_mask, cv2.MORPH_CLOSE, kernel, iterations=2)
+img_mask = cv2.morphologyEx(img_mask, cv2.MORPH_OPEN, kernel, iterations=1)
+# img = cv2.erode(img, kernel, iterations=1)
+
+img_mask[img_mask > 0] = 1
+
+img[img < 128] = 0
+img = img * img_mask
+img = img / 255.0
+
+# regions = cut(img, row_eps=img.shape[1] / 30, col_eps=10, display=True)
+# regions_recognition(regions, 'model/Test_CNN_Model.ckpt')
+
+plt.imshow(img1)
+plt.show()
+plt.imshow(img)
+plt.show()
