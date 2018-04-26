@@ -3,14 +3,22 @@
 import numpy as np
 import cv2
 import matplotlib.pyplot as plt
+import sys
 # from process.processor import *
 import matplotlib.patches as patches
 import random
 
 # img = cv2.imread("images/111.jpg", cv2.IMREAD_GRAYSCALE)
-img = cv2.imread("images/cz.jpg", cv2.IMREAD_GRAYSCALE)
+# img = cv2.imread("images/cz.jpg", cv2.IMREAD_GRAYSCALE)
 # img = cv2.imread("images/bk.jpg", cv2.IMREAD_GRAYSCALE)
+img = cv2.imread("images/bk1.jpg", cv2.IMREAD_GRAYSCALE)
 # img = cv2.imread("images/mine10.jpg", cv2.IMREAD_GRAYSCALE)
+img[img < 77] = 0
+plt.imshow(img)
+plt.show()
+
+sys.exit(1)
+
 img = 255 - img
 
 img1 = img.copy()
