@@ -12,7 +12,7 @@ def run(file_name):
     :return:
     """
     img = read_img(file_name, color_inv_norm=True)
-    regions = cut(img, row_eps=img.shape[1] / 3, col_eps=10, display=True)
+    regions = cut(img, row_eps=img.shape[1] / 30, col_eps=10, display=False)
     # alg_train('model/Test_CNN_Model.ckpt', epoch_time=3, p_keep_conv=0.8, p_keep_hidden=0.6)
     regions_recognition(regions, 'model/Test_CNN_Model.ckpt')
     # save_all_regions(regions, dir_name=['data/ques', 'data/nums'])
@@ -56,10 +56,10 @@ if __name__ == '__main__':
     # run('images/mine7.jpg')
     # run('images/mine8.jpg')
     # run('images/mine9.jpg')
-    # run('images/mine10.jpg')
+    run('images/mine10.jpg')
     # run('images/xb.jpg')
     # run('images/cz.jpg')
     # run('images/000.jpg')
-    run('images/001.jpg')
+    # run('images/001.jpg')
     # run('images/cz1.jpg')
     # get_dilate_img('data/jpg')

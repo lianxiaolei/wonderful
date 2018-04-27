@@ -3,6 +3,7 @@
 import numpy as np
 import cv2
 import matplotlib.pyplot as plt
+import os
 
 
 def detect(img):
@@ -44,18 +45,19 @@ def preprocess(gray):
     plt.imshow(binary)
     plt.show()
 
-    # element1 = cv2.getStructuringElement(cv2.MORPH_RECT, (30, 9))
-    # element2 = cv2.getStructuringElement(cv2.MORPH_RECT, (24, 6))
-
-    element1 = cv2.getStructuringElement(cv2.MORPH_RECT, (90, 18))
-    element2 = cv2.getStructuringElement(cv2.MORPH_RECT, (72, 12))
+    element1 = cv2.getStructuringElement(cv2.MORPH_RECT, (30, 9))
+    element2 = cv2.getStructuringElement(cv2.MORPH_RECT, (24, 6))
+    #
+    # element1 = cv2.getStructuringElement(cv2.MORPH_RECT, (90, 18))
+    # element2 = cv2.getStructuringElement(cv2.MORPH_RECT, (72, 12))
 
     dilation = cv2.dilate(binary, element2, iterations=1)
     erosion = cv2.erode(dilation, element1, iterations=1)
     dilation1 = cv2.dilate(erosion, element2, iterations=3)
     erosion1 = cv2.erode(dilation1, element2, iterations=3)
+    dilation2 = cv2.dilate(erosion1, element2, iterations=3)
     # dilation1 = dilation
-    plt.imshow(erosion1)
+    plt.imshow(dilation2)
     plt.show()
 
     return dilation1
@@ -107,9 +109,109 @@ def find_text_region(dilation):
     return region
 
 
+def dododo(fname):
+    img = 255 - cv2.imread(fname, cv2.IMREAD_GRAYSCALE)
+    kernel = np.ones((3, 3), np.uint8)
+    img = cv2.dilate(img, kernel)
+    img = cv2.GaussianBlur(img, (3, 3), 0)
+    # img = img / 255.0
+    img = cv2.resize(img, (40, 40))
+    img = np.pad(img, ((3,), (3,)), mode='constant')
+    return img
+
+
+def resave_img(base_path, target_bpath):
+    """
+    :param img:
+    :return:
+    """
+    # symb_list = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '+', '-', 'times', 'div', '=', '(', ')']
+    symb_list = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-', 'times', 'div', '=']
+
+    symbols = os.listdir(base_path)
+    for symbol in symbols:
+        calc = 0
+
+        if symbol not in symb_list: continue
+        print('now operate: ', symbol)
+
+        jpgs = os.listdir(os.path.join(base_path, symbol))
+
+        tmp_path = os.path.join(target_bpath, symbol)
+        if not os.path.exists(tmp_path):
+            os.mkdir(tmp_path)
+
+        for jpg in jpgs:
+            calc += 1
+            if calc > 10000:
+                print('the symbol %s is more than 10000' % symbol)
+                break
+
+            fname = os.path.join(base_path, symbol, jpg)
+            img = dododo(fname)
+
+            cv2.imwrite(os.path.join(tmp_path, jpg), img)
+
+            # plt.imshow(img)
+            # plt.show()
+        print(os.path.join(base_path, symbol), '-->', os.path.join(target_bpath, symbol))
+
+
 if __name__ == '__main__':
     # img = cv2.imread('images/bk.jpg')
     # img = cv2.imread('images/000.jpg')
-    img = cv2.imread('images/bk1.jpg')
+    # img = cv2.imread('images/bk1.jpg')
     # img = cv2.imread('images/0.png')
-    detect(img)
+    # detect(img)
+
+    import pandas as pd
+    # img = pd.read_csv('D:/datas/svhn-preprocessed-fragments/housenumbers/test_images.csv', index_col=0)
+    # img = img.dropna().as_matrix()
+    # print(img.shape)
+    # plt.imshow(img[373].reshape(32, 32))
+    # plt.show()
+
+    resave_img('F:/datas/extracted_images', 'F:/datas/pre_ocr')
+
+    import sys
+    sys.exit(13)
+
+    # img = 255 - cv2.imread('F:/datas/extracted_images/(/(_104771.jpg', cv2.IMREAD_GRAYSCALE)
+    img = cv2.imread('F:/datas/pre_ocr/(/(_1000.jpg', cv2.IMREAD_GRAYSCALE)
+
+    # img = cv2.resize(img, (22, 22))
+    plt.imshow(img)
+    plt.title('origin with inv color')
+    plt.show()
+
+    kernel = np.ones((3, 3), np.uint8)
+    # img = cv2.morphologyEx(img, cv2.MORPH_CLOSE, kernel, iterations=1)
+    # img = cv2.morphologyEx(img, cv2.MORPH_OPEN, kernel, iterations=1)
+    img = cv2.dilate(img, kernel)
+
+    plt.imshow(img)
+    plt.title('dilated')
+    plt.show()
+
+    img = cv2.GaussianBlur(img, (3, 3), 0) / 255.0
+    plt.imshow(img)
+    plt.title('gaussian blur')
+    plt.show()
+    img = cv2.resize(img, (40, 40))
+    print(img.shape)
+    plt.imshow(img)
+    plt.title('resize')
+    plt.show()
+    print(np.max(img))
+
+    element1 = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))
+    element2 = cv2.getStructuringElement(cv2.MORPH_RECT, (2, 2))
+    #
+    # element1 = cv2.getStructuringElement(cv2.MORPH_RECT, (90, 18))
+    # element2 = cv2.getStructuringElement(cv2.MORPH_RECT, (72, 12))
+
+    # dilation = cv2.dilate(img, element2, iterations=1)
+    # erosion = cv2.erode(dilation, element1, iterations=1)
+    # dilation1 = cv2.dilate(erosion, element2, iterations=1)
+
+
