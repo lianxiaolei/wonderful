@@ -125,8 +125,8 @@ def resave_img(base_path, target_bpath):
     :param img:
     :return:
     """
-    # symb_list = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '+', '-', 'times', 'div', '=', '(', ')']
-    symb_list = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-', 'times', 'div', '=']
+    symb_list = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '+', '-', 'times', 'div', '=', '(', ')']
+    # symb_list = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-', 'times', 'div', '=']
 
     symbols = os.listdir(base_path)
     for symbol in symbols:
@@ -171,7 +171,8 @@ if __name__ == '__main__':
     # plt.imshow(img[373].reshape(32, 32))
     # plt.show()
 
-    resave_img('F:/datas/extracted_images', 'F:/datas/pre_ocr')
+    resave_img('/Users/imperatore/tmp/extracted_images',
+               '/Users/imperatore/tmp/pre_ocr')
 
     import sys
     sys.exit(13)
