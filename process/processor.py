@@ -5,6 +5,7 @@ from core.cnn import CNN
 from tensorflow.examples.tutorials.mnist import input_data
 import os
 import cv2
+from sklearn.model_selection import train_test_split
 
 
 def cut(img, row_eps, col_eps, display=False):
@@ -128,6 +129,87 @@ def alg_train(model_name, p_keep_conv=1.0, p_keep_hidden=1.0,
     cnn.save(model_name)
 
 
+def get_new_data(base_path):
+    """
+
+    :param base_path:
+    :return:
+    """
+    nums = os.listdir(base_path)
+    train_data = []
+    train_label = []
+    lbl = [[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+           [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+           [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+           [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+           [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+           [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+           [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+           [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+           [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+           [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
+           [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
+           [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+           [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
+           [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
+           [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
+           [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+           [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1]]
+    for num in nums:
+        calc = 0
+        jpgs = os.listdir(os.path.join(base_path, num))
+        print('-' * 30, 'now load %s' % num, '-' * 30)
+        for jpg in jpgs:
+            calc += 1
+            if calc > 5000:
+                print('the %s data is more than 5000' % num)
+                break
+
+            fname = os.path.join(base_path, num, jpg)
+            pic = read_img(fname, color_inv_norm=False)
+            train_data.append(pic)
+            train_label.append(lbl[int(num)])
+
+    train_data = np.array(train_data)
+    train_label = np.array(train_label)
+    # print(train_data.shape, train_label.shape)
+    # print(train_data)
+    # print(np.argmax(train_label, axis=1))
+    return train_data, train_label
+
+
+def alg_train_new(model_name, p_keep_conv=1.0, p_keep_hidden=1.0,
+              batch_size=128, test_size=256, epoch_time=3):
+    """
+    :param model_name:
+    :param p_keep_conv:
+    :param p_keep_hidden:
+    :param batch_size:
+    :param test_size:
+    :param epoch_time
+    :return:
+    """
+    print('initializing CNN model')
+    cnn = CNN(p_keep_conv=p_keep_conv, p_keep_hidden=p_keep_hidden,
+              batch_size=batch_size, test_size=test_size, epoch_time=epoch_time)
+    print('CNN has been initialized')
+
+    print('load mnist done')
+    print('load extra data')
+    X, y = get_new_data('F:\datas\pre_ocr')
+    X = X / 255.0
+    X.shape
+    X = X.reshape(-1, 48, 48, 1)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
+    print('load extra data done')
+    print('training')
+    import time
+    tmp_time = time.time()
+    cnn.fit_new(X_train, y_train, X_test, y_test)
+    print('time cost:', time.time() - tmp_time)
+    cnn.save(model_name)
+
+
 def num_recognition(img, cnn):
     """
 
@@ -135,7 +217,8 @@ def num_recognition(img, cnn):
     :param cnn:
     :return:
     """
-    result = cnn.predict(img)
+    # result = cnn.predict(img)
+    result = cnn.predict_new(img)
     return result
 
 
@@ -191,3 +274,56 @@ def regions_recognition(regions, model_name):
             pass
 
     return regions
+
+
+def get_img_by_char(char, base_path='F:/datas/pre_ocr'):
+    """
+    get a img by giving char
+    :param char:
+    :param base_path:
+    :return:
+    """
+    opdict = {'+': 10, '-': 11, '*': 12, '/': 13, '=': 14, '(': 15, ')': 16}
+    if char in opdict.keys():
+        char = opdict[char]
+    path = os.path.join(base_path, str(char))
+    files = os.listdir(path)
+    rdm = random.randint(0, len(files))
+    file = files[rdm]
+    path = os.path.join(path, file)
+    return cv2.imread(path, cv2.IMREAD_GRAYSCALE)
+
+
+def get_sequence_img(chars):
+    x = get_img_by_char(chars[0])
+    for i in range(1, len(chars)):
+        x = np.hstack([x, get_img_by_char(chars[i])])
+    x = cv2.resize(x, (400, 80))
+    return x
+
+
+def generate():
+    ds = '0123456789'
+    ts = ['{}{}{}{}{}', '({}{}{}){}{}', '{}{}({}{}{})']
+    os = '+-*/'
+    # os = ['+', '-', 'times', 'div']
+    cs = [random.choice(ds) if x % 2 == 0 else random.choice(os) for x in range(5)]
+    return random.choice(ts).format(*cs)
+
+
+if __name__ == '__main__':
+    # for i in range(10):
+    #     que = generate()
+    #     print(que)
+
+    # for i in range(10):
+    #     img = get_img_by_char('1', 'F:/datas/pre_ocr')
+    #     plt.imshow(img)
+    #     plt.show()
+
+    st = '0-1*2/3'
+    img = get_sequence_img(st)
+    print(img.shape)
+    plt.imshow(img)
+    plt.show()
+

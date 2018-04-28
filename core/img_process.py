@@ -18,8 +18,6 @@ def read_img(file_name, color_inv_norm=True):
 
     if color_inv_norm:
         img = 255 - img
-        plt.imshow(img)
-        plt.show()
 
         # img = remove_back(img, np.ones((5, 5), np.uint8))
 
@@ -28,8 +26,7 @@ def read_img(file_name, color_inv_norm=True):
     else:
         img[img < 50] = 0
         img = img / 255.0
-    plt.imshow(img)
-    plt.show()
+
     return img
 
 
