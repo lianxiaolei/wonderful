@@ -14,9 +14,11 @@ def run(file_name):
     img = read_img(file_name, color_inv_norm=True)
     regions = cut(img, row_eps=img.shape[1] / 30, col_eps=10, display=False)
     # alg_train('model/Test_CNN_Model.ckpt', epoch_time=3, p_keep_conv=0.8, p_keep_hidden=0.6)
-    regions_recognition(regions, 'model/Test_CNN_Model.ckpt')
+    regions_recognition(regions, 'new_model/Test_CNN_Model.ckpt')
     # save_all_regions(regions, dir_name=['data/ques', 'data/nums'])
     # show_all_regions(img, regions, layer=0)
+
+    # alg_train_new('new_model/Test_CNN_Model.ckpt', epoch_time=3, p_keep_conv=0.8, p_keep_hidden=0.6)
 
 
 def get_dilate_img(base_path):
@@ -55,8 +57,8 @@ if __name__ == '__main__':
     # run('images/mine6.jpg')
     # run('images/mine7.jpg')
     # run('images/mine8.jpg')
-    # run('images/mine9.jpg')
-    run('images/mine10.jpg')
+    run('images/mine9.jpg')
+    # run('images/mine10.jpg')
     # run('images/xb.jpg')
     # run('images/cz.jpg')
     # run('images/000.jpg')

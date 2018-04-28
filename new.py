@@ -115,7 +115,8 @@ def dododo(fname):
     img = cv2.dilate(img, kernel)
     img = cv2.GaussianBlur(img, (3, 3), 0)
     # img = img / 255.0
-    img = cv2.resize(img, (40, 40))
+    img = cv2.resize(img, (42, 42))
+
     img = np.pad(img, ((3,), (3,)), mode='constant')
     return img
 
@@ -125,8 +126,8 @@ def resave_img(base_path, target_bpath):
     :param img:
     :return:
     """
-    # symb_list = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '+', '-', 'times', 'div', '=', '(', ')']
-    symb_list = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-', 'times', 'div', '=']
+    symb_list = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '+', '-', 'times', 'div', '=', '(', ')']
+    # symb_list = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-', 'times', 'div', '=']
 
     symbols = os.listdir(base_path)
     for symbol in symbols:
@@ -143,8 +144,8 @@ def resave_img(base_path, target_bpath):
 
         for jpg in jpgs:
             calc += 1
-            if calc > 10000:
-                print('the symbol %s is more than 10000' % symbol)
+            if calc > 6000:
+                print('the symbol %s is more than 6000' % symbol)
                 break
 
             fname = os.path.join(base_path, symbol, jpg)
@@ -206,12 +207,10 @@ if __name__ == '__main__':
 
     element1 = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))
     element2 = cv2.getStructuringElement(cv2.MORPH_RECT, (2, 2))
-    #
-    # element1 = cv2.getStructuringElement(cv2.MORPH_RECT, (90, 18))
-    # element2 = cv2.getStructuringElement(cv2.MORPH_RECT, (72, 12))
 
-    # dilation = cv2.dilate(img, element2, iterations=1)
-    # erosion = cv2.erode(dilation, element1, iterations=1)
-    # dilation1 = cv2.dilate(erosion, element2, iterations=1)
+    element1 = cv2.getStructuringElement(cv2.MORPH_RECT, (90, 18))
+    element2 = cv2.getStructuringElement(cv2.MORPH_RECT, (72, 12))
 
-
+    dilation = cv2.dilate(img, element2, iterations=1)
+    erosion = cv2.erode(dilation, element1, iterations=1)
+    dilation1 = cv2.dilate(erosion, element2, iterations=1)
