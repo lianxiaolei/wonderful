@@ -179,7 +179,7 @@ def get_new_data(base_path):
 
 
 def alg_train_new(model_name, p_keep_conv=1.0, p_keep_hidden=1.0,
-              batch_size=128, test_size=256, epoch_time=3):
+                  batch_size=128, test_size=256, epoch_time=3):
     """
     :param model_name:
     :param p_keep_conv:
