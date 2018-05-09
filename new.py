@@ -4,6 +4,7 @@ import numpy as np
 import cv2
 import matplotlib.pyplot as plt
 import os
+import sys
 
 
 def detect(img):
@@ -158,25 +159,56 @@ def resave_img(base_path, target_bpath):
         print(os.path.join(base_path, symbol), '-->', os.path.join(target_bpath, symbol))
 
 
+def remove_lines(img):
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    edges = cv2.Canny(gray, 50, 150, apertureSize=3)
+    # plt.imshow(edges)
+    # plt.show()
+
+    lines = cv2.HoughLines(edges, 0.8, np.pi / 180, 90)
+    print(lines)
+
+    for line in lines:
+        rho, theta = line[0]
+        a = np.cos(theta)
+        b = np.sin(theta)
+        x0 = a * rho
+        y0 = b * rho
+        x1 = int(x0 + 1000 * (-b))
+        y1 = int(y0 + 1000 * (a))
+        x2 = int(x0 - 1000 * (-b))
+        y2 = int(y0 - 1000 * (a))
+
+        cv2.line(img, (x1, y1), (x2, y2), (0, 0, 255), 2)
+
+    cv2.imwrite('houghlines.jpg', img)
+    print('done')
+
+
 if __name__ == '__main__':
     # img = cv2.imread('images/bk.jpg')
     # img = cv2.imread('images/000.jpg')
     # img = cv2.imread('images/bk1.jpg')
+    # img = cv2.imread('images/lyq.jpg')
+    img = cv2.imread('images/grid.jpg')
     # img = cv2.imread('images/0.png')
     # detect(img)
+    remove_lines(img)
+    sys.exit(13)
 
     import pandas as pd
+
     # img = pd.read_csv('D:/datas/svhn-preprocessed-fragments/housenumbers/test_images.csv', index_col=0)
     # img = img.dropna().as_matrix()
     # print(img.shape)
     # plt.imshow(img[373].reshape(32, 32))
     # plt.show()
 
-    resave_img('/Users/imperatore/tmp/extracted_images',
-               '/Users/imperatore/tmp/pre_ocr')
-
-    import sys
-    sys.exit(13)
+    # resave_img('/Users/imperatore/tmp/extracted_images',
+    #            '/Users/imperatore/tmp/pre_ocr')
+    #
+    # import sys
+    # sys.exit(13)
 
     # img = 255 - cv2.imread('F:/datas/extracted_images/(/(_104771.jpg', cv2.IMREAD_GRAYSCALE)
     img = cv2.imread('F:/datas/pre_ocr/(/(_1000.jpg', cv2.IMREAD_GRAYSCALE)
