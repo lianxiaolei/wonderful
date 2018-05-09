@@ -4,6 +4,7 @@ import numpy as np
 import cv2
 import matplotlib.pyplot as plt
 import os
+import sys
 
 
 def detect(img):
@@ -55,12 +56,12 @@ def preprocess(gray):
     erosion = cv2.erode(dilation, element1, iterations=1)
     dilation1 = cv2.dilate(erosion, element2, iterations=3)
     erosion1 = cv2.erode(dilation1, element2, iterations=3)
-    dilation2 = cv2.dilate(erosion1, element2, iterations=3)
+    dilation2 = cv2.dilate(erosion1, element2, iterations=8)
     # dilation1 = dilation
     plt.imshow(dilation2)
     plt.show()
 
-    return dilation1
+    return dilation2
 
 
 def find_text_region(dilation):
@@ -158,13 +159,26 @@ def resave_img(base_path, target_bpath):
         print(os.path.join(base_path, symbol), '-->', os.path.join(target_bpath, symbol))
 
 
+def mser(img):
+    mser = cv2.MSER_create(_delta=2, _min_area=2000, _max_variation=0.7)
+    regions, boxes = mser.detectRegions(img)
+    for box in boxes:
+        x, y, w, h = box
+        cv2.rectangle(img, (x, y), (x + w, y + h), (255, 0, 0), 2)
+    cv2.imshow("img2", img)
+    cv2.waitKey()
+
 if __name__ == '__main__':
     # img = cv2.imread('images/bk.jpg')
     # img = cv2.imread('images/000.jpg')
     # img = cv2.imread('images/bk1.jpg')
     # img = cv2.imread('images/0.png')
-    # detect(img)
+    img = cv2.imread('images/mine9.jpg')
+    detect(img)
 
+    # mser(img)
+
+    sys.exit(0)
     import pandas as pd
     # img = pd.read_csv('D:/datas/svhn-preprocessed-fragments/housenumbers/test_images.csv', index_col=0)
     # img = img.dropna().as_matrix()

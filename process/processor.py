@@ -276,54 +276,5 @@ def regions_recognition(regions, model_name):
     return regions
 
 
-def get_img_by_char(char, base_path='F:/datas/pre_ocr'):
-    """
-    get a img by giving char
-    :param char:
-    :param base_path:
-    :return:
-    """
-    opdict = {'+': 10, '-': 11, '*': 12, '/': 13, '=': 14, '(': 15, ')': 16}
-    if char in opdict.keys():
-        char = opdict[char]
-    path = os.path.join(base_path, str(char))
-    files = os.listdir(path)
-    rdm = random.randint(0, len(files))
-    file = files[rdm]
-    path = os.path.join(path, file)
-    return cv2.imread(path, cv2.IMREAD_GRAYSCALE)
-
-
-def get_sequence_img(chars):
-    x = get_img_by_char(chars[0])
-    for i in range(1, len(chars)):
-        x = np.hstack([x, get_img_by_char(chars[i])])
-    x = cv2.resize(x, (400, 80))
-    return x
-
-
-def generate():
-    ds = '0123456789'
-    ts = ['{}{}{}{}{}', '({}{}{}){}{}', '{}{}({}{}{})']
-    os = '+-*/'
-    # os = ['+', '-', 'times', 'div']
-    cs = [random.choice(ds) if x % 2 == 0 else random.choice(os) for x in range(5)]
-    return random.choice(ts).format(*cs)
-
-
 if __name__ == '__main__':
-    # for i in range(10):
-    #     que = generate()
-    #     print(que)
-
-    # for i in range(10):
-    #     img = get_img_by_char('1', 'F:/datas/pre_ocr')
-    #     plt.imshow(img)
-    #     plt.show()
-
-    st = '0-1*2/3'
-    img = get_sequence_img(st)
-    print(img.shape)
-    plt.imshow(img)
-    plt.show()
-
+    pass
