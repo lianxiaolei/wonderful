@@ -10,9 +10,11 @@ core/cnn.pyc
 core/img_process.pyc
 core/segmentation.pyc
 data/.DS_Store
+data/
 model/
 notebook/.ipynb_checkpoints/
 process/__init__.pyc
 process/processor.pyc
 *.pyc
 *.DS_Store
+

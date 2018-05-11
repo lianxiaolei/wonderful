@@ -25,7 +25,7 @@ def detect(img):
     cv2.namedWindow('img', cv2.WINDOW_NORMAL)
     cv2.imshow('img', img)
 
-    cv2.imwrite("contours.png", img)
+    # cv2.imwrite("contours.png", img)
 
     cv2.waitKey(0)
     cv2.destroyAllWindows()
@@ -44,6 +44,7 @@ def preprocess(gray):
 
     print(ret)
     plt.imshow(binary)
+    plt.title('ori binary')
     plt.show()
 
     element1 = cv2.getStructuringElement(cv2.MORPH_RECT, (10, 6))
@@ -54,19 +55,40 @@ def preprocess(gray):
 
     dilation = cv2.dilate(binary, element2, iterations=1)
     plt.imshow(dilation)
+    plt.title('dil0')
     plt.show()
+
     erosion = cv2.erode(dilation, element1, iterations=1)
     plt.imshow(erosion)
+    plt.title('ero0')
     plt.show()
-    dilation1 = cv2.dilate(erosion, element2, iterations=4)
+
+    median = cv2.medianBlur(erosion, 33)
+    plt.imshow(median)
+    plt.title('median')
+    plt.show()
+
+    # mask = 255 - cv2.adaptiveThreshold(
+    #     sobel, 255,
+    #     cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY,
+    #     3, 3)
+    # plt.imshow(mask)
+    # plt.title('mask')
+    # plt.show()
+
+    dilation1 = cv2.dilate(median, element2, iterations=4)
     plt.imshow(dilation1)
+    plt.title('dil1')
     plt.show()
+
     erosion1 = cv2.erode(dilation1, element2, iterations=1)
     plt.imshow(erosion1)
+    plt.title('ero1')
     plt.show()
+
     dilation2 = cv2.dilate(erosion1, element2, iterations=8)
-    # dilation1 = dilation
     plt.imshow(dilation2)
+    plt.title('dil2')
     plt.show()
 
     return dilation2
@@ -160,10 +182,10 @@ def resave_img(base_path, target_bpath):
             fname = os.path.join(base_path, symbol, jpg)
             img = dododo(fname)
 
-            cv2.imwrite(os.path.join(tmp_path, jpg), img)
+            # cv2.imwrite(os.path.join(tmp_path, jpg), img)
 
-            # plt.imshow(img)
-            # plt.show()
+            plt.imshow(img)
+            plt.show()
         print(os.path.join(base_path, symbol), '-->', os.path.join(target_bpath, symbol))
 
 
@@ -205,8 +227,8 @@ def remove_lines(img):
 
 if __name__ == '__main__':
     # img = cv2.imread('images/000.jpg')
-    img = cv2.imread('images/bk.jpg')
-    # img = cv2.imread('images/bk1.jpg')
+    # img = cv2.imread('images/bk.jpg')
+    img = cv2.imread('images/bk1.jpg')
     # img = cv2.imread('images/lyq.jpg')
     # img = cv2.imread('images/grid.jpg')
     # img = cv2.imread('images/grid1.jpg')
@@ -216,54 +238,16 @@ if __name__ == '__main__':
     # remove_lines(img)
     sys.exit(13)
 
-    import pandas as pd
-
-    # img = pd.read_csv('D:/datas/svhn-preprocessed-fragments/housenumbers/test_images.csv', index_col=0)
-    # img = img.dropna().as_matrix()
-    # print(img.shape)
-    # plt.imshow(img[373].reshape(32, 32))
-    # plt.show()
-
     # resave_img('/Users/imperatore/tmp/extracted_images',
     #            '/Users/imperatore/tmp/pre_ocr')
     #
     # import sys
     # sys.exit(13)
 
-    # img = 255 - cv2.imread('F:/datas/extracted_images/(/(_104771.jpg', cv2.IMREAD_GRAYSCALE)
-    img = cv2.imread('F:/datas/pre_ocr/(/(_1000.jpg', cv2.IMREAD_GRAYSCALE)
+    img = 255 - cv2.imread('F:/datas/extracted_images/(/(_104771.jpg', cv2.IMREAD_GRAYSCALE)
+    # img = cv2.imread('F:/datas/pre_ocr/15/(_1000.jpg', cv2.IMREAD_GRAYSCALE)
 
     # img = cv2.resize(img, (22, 22))
     plt.imshow(img)
     plt.title('origin with inv color')
     plt.show()
-
-    kernel = np.ones((3, 3), np.uint8)
-    # img = cv2.morphologyEx(img, cv2.MORPH_CLOSE, kernel, iterations=1)
-    # img = cv2.morphologyEx(img, cv2.MORPH_OPEN, kernel, iterations=1)
-    img = cv2.dilate(img, kernel)
-
-    plt.imshow(img)
-    plt.title('dilated')
-    plt.show()
-
-    img = cv2.GaussianBlur(img, (3, 3), 0) / 255.0
-    plt.imshow(img)
-    plt.title('gaussian blur')
-    plt.show()
-    img = cv2.resize(img, (40, 40))
-    print(img.shape)
-    plt.imshow(img)
-    plt.title('resize')
-    plt.show()
-    print(np.max(img))
-
-    element1 = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))
-    element2 = cv2.getStructuringElement(cv2.MORPH_RECT, (2, 2))
-
-    element1 = cv2.getStructuringElement(cv2.MORPH_RECT, (90, 18))
-    element2 = cv2.getStructuringElement(cv2.MORPH_RECT, (72, 12))
-
-    dilation = cv2.dilate(img, element2, iterations=1)
-    erosion = cv2.erode(dilation, element1, iterations=1)
-    dilation1 = cv2.dilate(erosion, element2, iterations=1)

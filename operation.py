@@ -17,8 +17,6 @@ img[img < 77] = 0
 plt.imshow(img)
 plt.show()
 
-sys.exit(1)
-
 img = 255 - img
 
 img1 = img.copy()
@@ -28,7 +26,7 @@ img1 = img1 / 255.0
 plt.imshow(img)
 plt.show()
 
-mask = cv2.adaptiveThreshold(img, 1, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, 5, 7)
+mask = cv2.adaptiveThreshold(img, 1, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 5, 7)
 plt.imshow(mask)
 plt.show()
 
