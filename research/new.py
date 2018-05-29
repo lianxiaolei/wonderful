@@ -229,6 +229,7 @@ if __name__ == '__main__':
     # img = cv2.imread('images/000.jpg')
     # img = cv2.imread('images/bk.jpg')
     img = cv2.imread('images/bk1.jpg')
+    # img = cv2.imread('images/mine7.jpg')
     # img = cv2.imread('images/lyq.jpg')
     # img = cv2.imread('images/grid.jpg')
     # img = cv2.imread('images/grid1.jpg')
