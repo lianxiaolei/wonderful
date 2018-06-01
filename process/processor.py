@@ -210,6 +210,80 @@ def alg_train_new(model_name, p_keep_conv=1.0, p_keep_hidden=1.0,
     cnn.save(model_name)
 
 
+def get_num_data(base_path):
+    """
+
+    :param base_path:
+    :return:
+    """
+    nums = os.listdir(base_path)
+    train_data = []
+    train_label = []
+    lbl = [[1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+           [0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+           [0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
+           [0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
+           [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+           [0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
+           [0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
+           [0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
+           [0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+           [0, 0, 0, 0, 0, 0, 0, 0, 0, 1]]
+    for num in nums:
+        calc = 0
+        jpgs = os.listdir(os.path.join(base_path, num))
+        print('-' * 30, 'now load %s' % num, '-' * 30)
+        for jpg in jpgs:
+            calc += 1
+            if calc > 5000:
+                print('the %s data is more than 5000' % num)
+                break
+
+            fname = os.path.join(base_path, num, jpg)
+            pic = read_img(fname, color_inv_norm=False)
+            train_data.append(pic)
+            train_label.append(lbl[int(num)])
+
+    train_data = np.array(train_data)
+    train_label = np.array(train_label)
+    # print(train_data.shape, train_label.shape)
+    # print(train_data)
+    # print(np.argmax(train_label, axis=1))
+    return train_data, train_label
+
+
+def alg_train_num(model_name, p_keep_conv=1.0, p_keep_hidden=1.0,
+                  batch_size=128, test_size=256, epoch_time=3):
+    """
+    :param model_name:
+    :param p_keep_conv:
+    :param p_keep_hidden:
+    :param batch_size:
+    :param test_size:
+    :param epoch_time
+    :return:
+    """
+    print('initializing CNN model')
+    cnn = CNN(p_keep_conv=p_keep_conv, p_keep_hidden=p_keep_hidden,
+              batch_size=batch_size, test_size=test_size, epoch_time=epoch_time)
+    print('CNN has been initialized')
+
+    print('load mnist done')
+    print('load extra data')
+    X, y = get_num_data('F:\datas\pre_ocr')
+    X = X / 255.0
+    X.shape
+    X = X.reshape(-1, 48, 48, 1)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
+    print('load extra data done')
+    print('training')
+    import time
+    tmp_time = time.time()
+    cnn.fit_new(X_train, y_train, X_test, y_test)
+    print('time cost:', time.time() - tmp_time)
+    cnn.save(model_name)
+
+
 def num_recognition(img, cnn):
     """
 
