@@ -217,6 +217,7 @@ x = concatenate([gru_2, gru_2b])
 x = Dropout(0.25)(x)
 x = Dense(n_class, kernel_initializer='he_normal', activation='softmax')(x)
 base_model = Model(input=input_tensor, output=x)
+base_model.output.shape
 
 # base_model2 = make_parallel(base_model, 4)
 
