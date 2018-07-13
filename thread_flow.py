@@ -12,27 +12,16 @@ def run(file_name):
     :return:
     """
     img = read_img(file_name, color_inv_norm=True)
-    regions = cut(img, row_eps=img.shape[1] / 30, col_eps=10, display=False)
+    plt.imshow(img)
+    plt.show()
+    regions = cut(img, row_eps=img.shape[1] / 30, col_eps=10, display=True)
     # alg_train('num_model/Nums_CNN_Model.ckpt', epoch_time=3, p_keep_conv=0.8, p_keep_hidden=0.6)
     # regions_recognition(regions, 'new_model/Test_CNN_Model.ckpt')
     save_all_regions(regions, dir_name=['data/ques', 'data/nums'])
-    print('save done')
+    # print('save done')
     # show_all_regions(img, regions, layer=0)
 
     # alg_train_new('new_model/Test_CNN_Model.ckpt', epoch_time=3, p_keep_conv=0.8, p_keep_hidden=0.6)
-
-
-def get_dilate_img(base_path):
-    nums = os.listdir(base_path)
-    for num in nums:
-        jpgs = os.listdir(os.path.join(base_path, num))
-        for jpg in jpgs:
-            fname = os.path.join(base_path, num, jpg)
-            pic = read_img(fname, color_inv_norm=False)
-            kernel = np.ones((2, 2), np.uint8)
-            img = cv2.dilate(pic, kernel, iterations=1)
-            cv2.imwrite(fname, img * 255.0)
-            cv2.destroyAllWindows()
 
 
 if __name__ == '__main__':
@@ -64,6 +53,6 @@ if __name__ == '__main__':
     # run('images/cz.jpg')
     # run('images/000.jpg')
     # run('images/001.jpg')
-    run('images/222.jpeg')
+    run('images/2222.jpg')
     # run('images/cz1.jpg')
     # get_dilate_img('data/jpg')

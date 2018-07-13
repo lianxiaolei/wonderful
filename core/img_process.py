@@ -21,7 +21,7 @@ def read_img(file_name, color_inv_norm=True):
 
         # img = remove_back(img, np.ones((5, 5), np.uint8))
 
-        img[img < 128] = 0
+        img[img < 50] = 0
         img = img / 255.0
     else:
         img[img < 50] = 0

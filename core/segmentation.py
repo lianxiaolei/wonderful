@@ -118,6 +118,7 @@ def get_area_dict(img, row_list, col_list, resize=False, display=False):
                     # sub_img = cv2.dilate(sub_img, kernel, iterations=1)
 
                     if display:
+                        print('display')
                         plt.imshow(sub_img)
                         plt.show()
 
@@ -145,6 +146,7 @@ def get_area_dict(img, row_list, col_list, resize=False, display=False):
                     # sub_img = cv2.dilate(sub_img, kernel, iterations=1)
 
                     if display:
+                        print('display')
                         plt.imshow(sub_img)
                         plt.show()
 

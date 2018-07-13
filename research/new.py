@@ -15,9 +15,10 @@ def detect(img):
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     print(gray.shape)
 
-    dilation = preprocess(gray)
+    gray[gray > 120] = 255
+    gray[gray <= 120] = 0
 
-    region = find_text_region(dilation)
+    region = find_text_region(gray)
 
     for box in region:
         cv2.drawContours(img, [box], 0, (0, 255, 0), 2)
@@ -76,7 +77,7 @@ def preprocess(gray):
     # plt.title('mask')
     # plt.show()
 
-    dilation1 = cv2.dilate(median, element2, iterations=4)
+    dilation1 = cv2.dilate(median, element2, iterations=2)
     plt.imshow(dilation1)
     plt.title('dil1')
     plt.show()
@@ -86,7 +87,7 @@ def preprocess(gray):
     plt.title('ero1')
     plt.show()
 
-    dilation2 = cv2.dilate(erosion1, element2, iterations=8)
+    dilation2 = cv2.dilate(erosion1, element2, iterations=2)
     plt.imshow(dilation2)
     plt.title('dil2')
     plt.show()
@@ -111,8 +112,8 @@ def find_text_region(dilation):
         area = cv2.contourArea(cnt)
 
         # 面积小的都筛选掉
-        if (area < 1000):
-            continue
+        # if (area < 1000):
+        #     continue
 
         # 轮廓近似，作用很小
         epsilon = 0.001 * cv2.arcLength(cnt, True)
@@ -132,8 +133,8 @@ def find_text_region(dilation):
         width = abs(box[0][0] - box[2][0])
 
         # 筛选那些太细的矩形，留下扁的
-        if height > width * 1.2:
-            continue
+        # if height > width * 1.2:
+        #     continue
 
         region.append(box)
 
@@ -229,6 +230,7 @@ if __name__ == '__main__':
     # img = cv2.imread('images/000.jpg')
     # img = cv2.imread('images/bk.jpg')
     img = cv2.imread('../images/bk1.jpg')
+    img = cv2.imread('../1234.jpg')
     # img = cv2.imread('images/mine7.jpg')
     # img = cv2.imread('images/lyq.jpg')
     # img = cv2.imread('images/grid.jpg')

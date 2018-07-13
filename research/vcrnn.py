@@ -51,7 +51,7 @@ def evaluate(batch_size=128, steps=10):
 
 class Evaluator(Callback):
     def __init__(self):
-        self.acc = []
+        self.accs = []
 
     def on_epoch_end(self, epoch, logs=None):
         acc = evaluate(steps=20) * 100
